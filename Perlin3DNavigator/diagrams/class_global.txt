@@ -1,0 +1,447 @@
+
+
+@startuml
+
+
+skinparam shadowing false
+
+
+title Diagramme de classe\nWebservice
+
+
+package "widgets" {
+
+
+	class Abstract_GLWidget {
+		.. attributs ..
+		- QTimer* _pQTimer
+		- bool _loopMode
+
+		.. ctor / dtor ..
+		+ Abstract_GLWidget(QWidget *parent = 0)
+		+ {abstract} ~Abstract_GLWidget()
+
+		.. QGLWidget overide ..
+		+ {abstract} void initializeGL()
+		+ {abstract} void update() = 0
+		+ {abstract} void resizeGL(int width, int height) = 0
+		+ {abstract} void paintGL() = 0
+		+ {abstract} void showEvent(QShowEvent*)
+
+		.. methods ..
+		+ void setLoop(bool loopMode)
+		+ bool getLoop() const
+
+		.. slots ..
+		- {abstract} void slot_timeout()
+	}
+
+
+
+	class FreeFlyCameraWidget {
+		.. ctor / dtor ..
+		+ FreeFlyCameraWidget(QWidget *parent = 0)
+		+ {abstract} ~FreeFlyCameraWidget()
+
+		.. attributs ..
+		# myGL::GL_FreeFlyController _FreeFly
+		# myGL::GL_FrustumCulling _Frustum
+		# myGL::GL_Matrix _projectionMatrix, _viewMatrix
+
+		.. QGLWidget overide ..
+		+ {abstract} void focusOutEvent(QFocusEvent*)
+		# {abstract} void closeEvent(QCloseEvent *event)
+
+		# {abstract} void mouseMoveEvent(QMouseEvent* event)
+		# {abstract} void mousePressEvent(QMouseEvent* event)
+
+		# void managekey_Event(QKeyEvent* keyEvent, float value)
+		# {abstract} void keyPressEvent(QKeyEvent* keyEvent)
+		# {abstract} void keyReleaseEvent(QKeyEvent* keyEvent)
+
+		.. methods ..
+		+ {abstract} void initializeGL()
+		+ {abstract} void update()
+		+ void manual_resize(int width, int height)
+		+ {abstract} void resizeGL(int width, int height)
+	}
+
+
+
+	class Perlin3DViewerWidget {
+		.. ctor / dtor ..
+		+ Perlin3DViewerWidget(QWidget *parent = 0)
+		+ virtual ~Perlin3DViewerWidget()
+
+		.. typedef ..
+		- <color:#00AA00>typedef std::vector< Perlin3D_Chunk* >  t_Chunks</color>
+
+		.. attributs ..
+		- PerlinNoise _PerlinNoise
+		- ChunkGenerator  _ChunkGenerator
+		- t_Chunks _Perlin3D_Chunks
+		+ t_Shader_Perlin3D _shader
+		+ float _advance
+
+		.. attributs (geometries) ..
+		- Geometry_HUD_Grid _Geometry_HUDGrid
+		- Geometry_HUD_Frustum _Geometry_HUD_Frustum
+		- Geometry_Box _Geometry_Box
+
+		.. methods ..
+		- void updatePerlinChunks()
+		- void renderHUD()
+		- void renderBoxes<b>(</b>\n\tconst myGL::GL_Matrix& modelviewMatrix\n<b>)</b>
+		- void renderBox<b>(</b>\n\tconst myGL::GL_Matrix& modelviewMatrix,\n\tconst Perlin3D_Chunk& Chunk\n<b>)</b>
+
+		.. QGLWidget overide ..
+		+ {abstract} void initializeGL()
+		+ {abstract} void update()
+		+ {abstract} void resizeGL(int width, int height)
+		+ {abstract} void paintGL()
+	}
+
+
+}
+
+
+
+
+
+
+
+package "shader_utils" {
+
+class LightProperties {
+	.. attributs ..
+	+ myGL::Vec3f direction
+	+ myGL::Vec4f ambientColor
+	+ myGL::Vec4f diffuseColor
+	+ myGL::Vec4f specularColor
+}
+
+class MaterialProperties {
+	.. attributs ..
+	+ myGL::Vec4f ambientColor
+	+ myGL::Vec4f diffuseColor
+	+ myGL::Vec4f specularColor
+	+ GLfloat specularExponent
+}
+
+class LightLocations {
+	.. attributs ..
+	+ GLint directionLocation
+	+ GLint ambientColorLocation
+	+ GLint diffuseColorLocation
+	+ GLint specularColorLocation
+}
+
+class MaterialLocations {
+	.. attributs ..
+	+ GLint ambientColorLocation
+	+ GLint diffuseColorLocation
+	+ GLint specularColorLocation
+	+ GLint specularExponentLocation
+}
+
+}
+
+
+class t_Shader_Perlin3D {
+	.. attributs ..
+	+ GLuint _programm_id
+
+	+ GLuint _location_a_vertex
+	+ GLuint _location_a_color
+	+ GLuint _location_a_normal
+
+	+ GLuint _location_u_modelviewMatrix
+	+ GLuint _location_u_projectionMatrix
+	+ GLuint _location_u_normalMatrix
+	+ GLuint _location_u_mode
+	+ GLuint _location_u_lightEnabled
+
+	+ GLuint _location_u_perturbationEnabled
+	+ GLuint _location_u_advance
+
+	+ LightLocations _locations_light
+	+ MaterialLocations _locations_material
+
+	+ LightProperties _properties_light
+	+ MaterialProperties _properties_material
+
+	.. methods ..
+	+ void init()
+	- void prepareShaderProgram<b>(</b>\n\tconst std::string& vertexShaderPath,\n\tconst std::string& fragmentShaderPath\n<b>)</b>
+}
+
+
+
+
+
+
+class   ChunkGenerator {
+	.. threading utility ..
+	- bool _inUse
+	- bool _abort
+
+	- QMutex _mutex
+	- QWaitCondition _condition
+
+	+ bool threadInUse() const
+
+	# void run()
+
+	.. chunk size ..
+	- unsigned int _chunkSize
+	- float _fStepSize
+
+	+ unsigned int getChunkSize() const
+	+ bool setChunkSize(unsigned int)
+
+	.. cache ..
+	- float* _cache_perlinNoise
+	- int* _cache_trianglesIndices
+
+	.. attributs ..
+	+ PerlinNoise _PerlinNoise
+	- Perlin3D_Chunk* _pPerlin3D_Chunk
+
+	.. ctor / dtor ..
+	+ ChunkGenerator(QObject *parent = NULL)
+	+ ~ChunkGenerator()
+
+	.. methods ..
+	+ bool generate<b>(</b>\n\tconst myGL::Vec3i& pos,\n\tPerlin3D_Chunk* pPerlin3D_Chunk,\n\tbool use_thread = true\n<b>)</b>
+
+	.. methods : marching cubes ..
+	- float sample(const float fX, const float fY, const float fZ)
+	- void  marchingCubes()
+	- void  getNormal<b>(</b>\n\tmyGL::Vec3f &rfNormal,\n\tconst float fX, const float fY, const float fZ\n<b>)</b>
+	- void  marchCube<b>(</b>\n\tconst int iX, const int iY, const int iZ,\n\tconst float fScale, const float fTv\n<b>)</b>
+}
+
+QThread <|-- ChunkGenerator
+
+
+
+
+
+
+class Perlin3D_Chunk {
+	.. attributs : common ..
+	- {static} t_Shader_Perlin3D* _pShader
+	+ {static} void initialize(t_Shader_Perlin3D*)
+
+	.. attributs ..
+	- myGL::Vec3i _pos
+	- float _sideSize
+
+	- bool _enabled
+	- bool _VBO_and_VAO_initialized
+
+	.. buffers ..
+	- GLuint _pChunkVertexArrayObject_IDs[eVAO_Count]
+	- GLuint _pChunkVertexBufferObject_IDs[eVBO_Count]
+
+	- t_Vertices _Vertices
+	- t_Indices _Indices
+	- t_Indices _Indices_lines
+
+	- bool _is_computed
+	- void computeBuffers()
+
+	.. ctor / dtor ..
+	+ Perlin3D_Chunk()
+	+ ~Perlin3D_Chunk()
+
+	.. methods ..
+	+ void render()
+	+ void render_lines()
+
+	.. getter ..
+	+ bool isVisible( const myGL::GL_FrustumCulling& )
+	+ const myGL::Vec3i& getPosition() const
+
+	.. status ..
+	+ void disable()
+	+ bool isEnabled() const
+	+ bool isDisabled() const
+}
+
+
+enum e_VAO_PerlinChunk_enum {
+	eVAO_Perlin3dHull = 0
+	eVAO_Perlin3dLines
+	eVAO_Count
+}
+
+enum e_VBO_PerlinChunk_enum {
+	eVBO_Perlin3dHull_vertices = 0
+	eVBO_Perlin3dHull_indices
+	eVBO_Perlin3dLines_indices
+	eVBO_Count
+}
+
+Perlin3D_Chunk -- e_VAO_PerlinChunk_enum
+Perlin3D_Chunk -- e_VBO_PerlinChunk_enum
+
+
+
+
+
+package "geometry" {
+
+	class Abstract_Geometry {
+		.. protected ..
+		# t_Shader_Perlin3D _shader
+		# bool _isInitialized
+		# bool _VBO_and_VAO_initialized
+
+		.. ctor ..
+		+ Abstract_Geometry( t_Shader_Perlin3D& )
+	}
+
+	class Geometry_Box {
+		.. sideSize ..
+		- float _sideSize
+		+ void setSideSize(float)
+		+ float getSideSize() const
+
+		.. Buffers ..
+		- GLuint  _pBoxVertexArrayObject_IDs[<color:#FF0000><b>eVAO_Count</b></color>]
+		- GLuint  _pBoxVertexBufferObject_IDs[<color:#FF0000><b>eVBO_Count</b></color>]
+
+		- t_Vertices  _boxVertices
+		- t_Indices   _boxIndices
+
+		.. ctor / dtor ..
+		+ Geometry_Box( t_Shader_Perlin3D& shader )
+		+ ~Geometry_Box()
+
+		.. methods ..
+		+ void generate()
+		+ void bind()
+		+ void render()
+		+ void unbind() const
+	}
+
+	enum e_VAO_Box_enum {
+		eVAO_Box = 0
+		eVAO_Count
+	}
+
+	enum e_VBO_Box_enum {
+		eVBO_Box_vertices = 0
+		eVBO_Box_indices
+		eVBO_Count
+	}
+
+
+	class Geometry_HUD_Frustum {
+		.. Buffers ..
+		- GLuint _pFrustumVertexArrayObject_IDs[<color:#FF0000><b>eVAO_Count</b></color>]
+		- GLuint _pFrustumVertexBufferObject_IDs[<color:#FF0000><b>eVBO_Count</b></color>]
+
+		- t_Vertices _frustumVertices
+		- t_Indices _frustumIndices
+
+		.. ctor / dtor ..
+		+ Geometry_HUD_Frustum( t_Shader_Perlin3D& shader )
+		+ ~Geometry_HUD_Frustum()
+
+		.. methods ..
+		+ void generate( double aspect_ratio )
+		+ void render<b>(</b>\n\tconst myGL::GL_Matrix& modelviewMatrix,\n\tconst myGL::GL_FreeFlyController& FreeFly,\n\tdouble aspect_ratio\n<b>)</b>
+		+ void regenerate()
+	}
+
+	enum e_VAO_Frustum_enum {
+		eVAO_Frustum = 0
+		eVAO_Count
+	}
+
+	enum e_VBO_Frustum_enum {
+		eVBO_Frustum_vertices = 0
+		eVBO_Frustum_indices
+		eVBO_Count
+	}
+
+
+	class Geometry_HUD_Grid {
+		.. sideSize ..
+		- float _sideSize
+		+ void setSideSize(float sideSize)
+		+ float getSideSize() const
+
+		.. Buffers ..
+		- GLuint _pGridVertexArrayObject_IDs[<color:#FF0000><b>eVAO_Count</b></color>]
+		- GLuint _pGridVertexBufferObject_IDs[<color:#FF0000><b>eVBO_Count</b></color>]
+
+		- t_Vertices _gridVertices
+		- t_Indices _gridIndices
+
+		.. ctor / dtor ..
+		+ Geometry_HUD_Grid( t_Shader_Perlin3D& shader )
+		+ ~Geometry_HUD_Grid()
+
+		.. methods ..
+		+ void generate()
+		+ void render<b>(</b>\n\tconst myGL::GL_Matrix& modelviewMatrix,\n\tconst myGL::Vec3f& camera_pos\n<b>)</b>
+
+	}
+
+	enum e_VAO_Grid_enum {
+		eVAO_Grid = 0
+		eVAO_Count
+	}
+
+	enum e_VBO_Grid_enum {
+		eVBO_Grid_vertices = 0
+		eVBO_Grid_indices
+		eVBO_Count
+	}
+
+}
+
+
+t_Shader_Perlin3D o-- Abstract_Geometry
+
+Abstract_Geometry <|-- Geometry_Box
+Abstract_Geometry <|-- Geometry_HUD_Frustum
+Abstract_Geometry <|-- Geometry_HUD_Grid
+
+
+Geometry_Box -- e_VAO_Box_enum
+Geometry_Box -- e_VBO_Box_enum
+
+Geometry_HUD_Frustum -- e_VAO_Frustum_enum
+Geometry_HUD_Frustum -- e_VBO_Frustum_enum
+
+Geometry_HUD_Grid -- e_VAO_Grid_enum
+Geometry_HUD_Grid -- e_VBO_Grid_enum
+
+
+
+QGLWidget <|-- Abstract_GLWidget
+Abstract_GLWidget <|-- FreeFlyCameraWidget
+FreeFlyCameraWidget <|-- Perlin3DViewerWidget
+
+Perlin3DViewerWidget --* t_Shader_Perlin3D
+
+Perlin3DViewerWidget --* Geometry_Box
+Perlin3DViewerWidget --* Geometry_HUD_Frustum
+Perlin3DViewerWidget --* Geometry_HUD_Grid
+
+Perlin3DViewerWidget --* ChunkGenerator
+Perlin3DViewerWidget --* Perlin3D_Chunk
+ChunkGenerator --o Perlin3D_Chunk
+
+t_Shader_Perlin3D --* LightProperties
+t_Shader_Perlin3D --* MaterialProperties
+t_Shader_Perlin3D --* LightLocations
+t_Shader_Perlin3D --* MaterialLocations
+
+
+@enduml
+
