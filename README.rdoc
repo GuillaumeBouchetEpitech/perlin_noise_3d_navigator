@@ -1,13 +1,17 @@
 = Perlin noise 3d navigator
 
+At the moment this is working on linux.
 
-For now : linux only (make it work on windows is the next step).
 
+A simple Perlin Noise 3D navigator (free fly camera).
 
-A simple Perlin Noise 3D navigator (free fly camera),
-supposed to be infinite (=> within the range of a floatting type variable)
+The generation is supposed to be infinite (within the range of a floatting type variable).
 
+== Screenshot
 link:./media/perlin_noise_screenshot.png
+
+== Video
+(soon)
 
 
 == Credits :
