@@ -51,16 +51,15 @@ HEADERS  += \
     perlin3d_chunk.h \
     glheader.h \
     Core3_2_context.h \
-    perlin3dviewerwidget.h \
     t_shader_perlin3d.h \
     navigator_globalvalue.h \
     chunkgenerator.h \
     geometry/abstract_geometry.h
 
 HEADERS  += \
-    widgets/Abstract_GLWidget.hpp \
+    widgets/Abstract_GLWidget.hpp   \
     widgets/FreeFlyCameraWidget.hpp \
-    widgets/perlin3dviewerwidget.h \
+    widgets/perlin3dviewerwidget.h  \
     widgets/chunkpropertieswidget.h \
     widgets/mainwindow.h
 
@@ -73,6 +72,24 @@ HEADERS  += \
 HEADERS  += \
     utils/PerlinNoise.hpp \
     utils/Randomizer.hpp
+
+SOURCES += \
+    GL_FrustumCulling.cpp \
+    GL_Math.cpp \
+    GL_Matrix.cpp \
+    GL_Vec2.inl \
+    GL_Vec3.inl \
+    GL_Vec4.inl \
+    GL_FreeFlyController.cpp
+
+HEADERS +=\
+    GL_FrustumCulling.hpp \
+    GL_Math.hpp \
+    GL_Matrix.hpp \
+    GL_Vec2.hpp \
+    GL_Vec3.hpp \
+    GL_Vec4.hpp \
+    GL_FreeFlyController.hpp
 
 ###
 
@@ -90,7 +107,9 @@ win32{
 }
 
 unix{
-    LIBS += -L$$PWD/../myGL/build/Debug/ -lmyGL
+#    LIBS += -L$$PWD/../myGL/build/Debug/ -lmyGL
+#    LIBS += -L$$PWD/../myGL -lmyGL
+#   LIBS += $$PWD/../myGL/libmyGL.so.1.0.0
     LIBS += -lGLEW
 }
 
