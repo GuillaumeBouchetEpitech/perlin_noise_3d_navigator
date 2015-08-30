@@ -59,9 +59,9 @@ void	Abstract_GLWidget::initializeGL()
 void	Abstract_GLWidget::showEvent(QShowEvent*)
 {
 
-#ifdef Q_WS_X11
-    XFlush(QX11Info::display());
-#endif
+// #ifdef Q_WS_X11
+//     XFlush(QX11Info::display());
+// #endif
 
     updateGL();
 }
