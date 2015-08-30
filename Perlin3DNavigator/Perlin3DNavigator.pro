@@ -73,23 +73,25 @@ HEADERS  += \
     utils/PerlinNoise.hpp \
     utils/Randomizer.hpp
 
+###
+
 SOURCES += \
-    GL_FrustumCulling.cpp \
-    GL_Math.cpp \
-    GL_Matrix.cpp \
-    GL_Vec2.inl \
-    GL_Vec3.inl \
-    GL_Vec4.inl \
-    GL_FreeFlyController.cpp
+    myGL/GL_FrustumCulling.cpp \
+    myGL/GL_Math.cpp \
+    myGL/GL_Matrix.cpp \
+    myGL/GL_Vec2.inl \
+    myGL/GL_Vec3.inl \
+    myGL/GL_Vec4.inl \
+    myGL/GL_FreeFlyController.cpp
 
 HEADERS +=\
-    GL_FrustumCulling.hpp \
-    GL_Math.hpp \
-    GL_Matrix.hpp \
-    GL_Vec2.hpp \
-    GL_Vec3.hpp \
-    GL_Vec4.hpp \
-    GL_FreeFlyController.hpp
+    myGL/GL_FrustumCulling.hpp \
+    myGL/GL_Math.hpp \
+    myGL/GL_Matrix.hpp \
+    myGL/GL_Vec2.hpp \
+    myGL/GL_Vec3.hpp \
+    myGL/GL_Vec4.hpp \
+    myGL/GL_FreeFlyController.hpp
 
 ###
 
@@ -107,15 +109,12 @@ win32{
 }
 
 unix{
-#    LIBS += -L$$PWD/../myGL/build/Debug/ -lmyGL
-#    LIBS += -L$$PWD/../myGL -lmyGL
-#   LIBS += $$PWD/../myGL/libmyGL.so.1.0.0
     LIBS += -lGLEW
 }
 
 
-INCLUDEPATH += $$PWD/../myGL
-DEPENDPATH += $$PWD/../myGL
+INCLUDEPATH += $$PWD/myGL
+DEPENDPATH += $$PWD/myGL
 
 OTHER_FILES +=          \
     TODOLIST.txt \
