@@ -5,7 +5,7 @@
 
 #include "t_vertex.h"
 
-#include "GL_Matrix.hpp"
+#include "../myGL/GL_Matrix.hpp"
 
 
 #include "abstract_geometry.h"

@@ -2,7 +2,7 @@
 #define T_VERTEX_H
 
 
-#include "GL_Vec3.hpp"
+#include "../myGL/GL_Vec3.hpp"
 
 #include <vector>
 

@@ -6,7 +6,7 @@
 
 #include "Abstract_GLWidget.hpp"
 
-#include "GL_FreeFlyController.hpp"
+#include "myGL/GL_FreeFlyController.hpp"
 
 
 class	FreeFlyCameraWidget : public Abstract_GLWidget

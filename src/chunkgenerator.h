@@ -4,7 +4,7 @@
 
 #include "utils/PerlinNoise.hpp"
 
-#include "GL_Vec3.hpp"
+#include "myGL/GL_Vec3.hpp"
 
 
 #include <QThread>

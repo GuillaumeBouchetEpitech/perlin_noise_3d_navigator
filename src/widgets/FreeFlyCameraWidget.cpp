@@ -2,7 +2,7 @@
 #include "FreeFlyCameraWidget.hpp"
 
 
-#include "GL_Matrix.hpp"
+#include "../myGL/GL_Matrix.hpp"
 
 #include <QMouseEvent>
 

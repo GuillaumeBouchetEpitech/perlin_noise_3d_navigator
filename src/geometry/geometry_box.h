@@ -2,7 +2,7 @@
 #define GEOMETRY_BOX_H
 
 
-#include "GL_FreeFlyController.hpp"
+#include "../myGL/GL_FreeFlyController.hpp"
 #include "t_vertex.h"
 
 #include "abstract_geometry.h"

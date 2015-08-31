@@ -7,7 +7,7 @@
 
 #include "glheader.h"
 
-#include "GL_FreeFlyController.hpp"
+#include "myGL/GL_FreeFlyController.hpp"
 
 #include "geometry/t_vertex.h"
 

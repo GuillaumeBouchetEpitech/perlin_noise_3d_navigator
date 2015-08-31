@@ -2,8 +2,8 @@
 #define T_SHADER_PERLIN3D_H
 
 
-#include "GL_Vec3.hpp"
-#include "GL_Vec4.hpp"
+#include "myGL/GL_Vec3.hpp"
+#include "myGL/GL_Vec4.hpp"
 
 #include "glheader.h"
 
