@@ -17,6 +17,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Perlin3DNavigator
 TEMPLATE = app
 
+OBJECTS_DIR = ./obj
+MOC_DIR = ./obj
+
 ###
 
 SOURCES += \
@@ -100,6 +103,7 @@ FORMS    +=
 
 LIBS += -LGLEW
 
+
 win32{
     INCLUDEPATH *= "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
     LIBS *= "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib\glew32.lib"
@@ -115,8 +119,6 @@ unix{
 INCLUDEPATH += $$PWD/src
 DEPENDPATH += $$PWD/src
 
-INCLUDEPATH += $$PWD/src/myGL
-DEPENDPATH += $$PWD/src/myGL
 
 OTHER_FILES +=          \
     TODOLIST.txt \
