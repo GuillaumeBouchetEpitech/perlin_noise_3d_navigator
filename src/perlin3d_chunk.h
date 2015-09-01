@@ -2,7 +2,7 @@
 #define PERLIN3D_CHUNK_H
 
 
-#include "utils/PerlinNoise.hpp"
+#include "generation/PerlinNoise.hpp"
 
 
 #include "glheader.h"

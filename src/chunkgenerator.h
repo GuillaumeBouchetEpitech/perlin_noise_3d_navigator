@@ -2,7 +2,7 @@
 #define CHUNKGENERATOR_H
 
 
-#include "utils/PerlinNoise.hpp"
+#include "generation/PerlinNoise.hpp"
 
 #include "myGL/GL_Vec3.hpp"
 
