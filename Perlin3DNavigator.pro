@@ -73,8 +73,8 @@ HEADERS  += \
     src/geometry/t_vertex.h
 
 HEADERS  += \
-    src/utils/PerlinNoise.hpp \
-    src/utils/Randomizer.hpp
+    src/generation/PerlinNoise.hpp \
+    src/generation/Randomizer.hpp
 
 ###
 
@@ -103,6 +103,7 @@ FORMS    +=
 
 LIBS += -LGLEW
 
+###
 
 win32{
     INCLUDEPATH *= "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
