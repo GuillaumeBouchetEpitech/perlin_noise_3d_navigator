@@ -45,8 +45,8 @@ SOURCES += \
     src/geometry/t_vertex.cpp
 
 SOURCES += \
-    src/utils/PerlinNoise.cpp \
-    src/utils/Randomizer.cpp
+    src/generation/PerlinNoise.cpp \
+    src/generation/Randomizer.cpp
 
 ###
 
