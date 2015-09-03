@@ -14,6 +14,21 @@ link:./media/perlin_noise_screenshot.png
 https://www.youtube.com/watch?v=hWUUX6tJBbk
 
 
+== Build
+
+GNU/Linux Dependencies
+  libqt4-opengl-dev
+  libqt4-dev
+
+Build
+  qmake
+  make
+
+Build faster
+  qmake
+  make -j
+
+
 == Credits :
 
 Marching cube (polygonisation)  :: Dr. Klaus Miltenberger (website)[http://paulbourke.net/geometry/polygonise/]
