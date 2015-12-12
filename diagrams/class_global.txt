@@ -427,20 +427,20 @@ QGLWidget <|-- Abstract_GLWidget
 Abstract_GLWidget <|-- FreeFlyCameraWidget
 FreeFlyCameraWidget <|-- Perlin3DViewerWidget
 
-Perlin3DViewerWidget --* t_Shader_Perlin3D
+Perlin3DViewerWidget *-- t_Shader_Perlin3D
 
-Perlin3DViewerWidget --* Geometry_Box
-Perlin3DViewerWidget --* Geometry_HUD_Frustum
-Perlin3DViewerWidget --* Geometry_HUD_Grid
+Perlin3DViewerWidget *-- Geometry_Box
+Perlin3DViewerWidget *-- Geometry_HUD_Frustum
+Perlin3DViewerWidget *-- Geometry_HUD_Grid
 
-Perlin3DViewerWidget --* ChunkGenerator
-Perlin3DViewerWidget --* Perlin3D_Chunk
-ChunkGenerator --o Perlin3D_Chunk
+Perlin3DViewerWidget *-- ChunkGenerator
+Perlin3DViewerWidget *-- Perlin3D_Chunk
+ChunkGenerator o-- Perlin3D_Chunk
 
-t_Shader_Perlin3D --* LightProperties
-t_Shader_Perlin3D --* MaterialProperties
-t_Shader_Perlin3D --* LightLocations
-t_Shader_Perlin3D --* MaterialLocations
+t_Shader_Perlin3D *-- LightProperties
+t_Shader_Perlin3D *-- MaterialProperties
+t_Shader_Perlin3D *-- LightLocations
+t_Shader_Perlin3D *-- MaterialLocations
 
 
 @enduml
