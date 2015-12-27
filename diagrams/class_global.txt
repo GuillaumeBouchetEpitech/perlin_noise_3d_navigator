@@ -298,8 +298,23 @@ package "geometry" {
 		# bool _isInitialized
 		# bool _VBO_and_VAO_initialized
 
+		- GLuint  _pVAO_ID
+		- GLuint  _pVBO_IDs[<color:#FF0000><b>eVBO_count</b></color>]
+		- t_Vertices  _boxVertices
+		- t_Indices   _boxIndices
+
 		.. ctor ..
 		+ Abstract_Geometry( t_Shader_Perlin3D& )
+		+ ~Abstract_Geometry()
+
+		.. methods ..
+		+ void generate()
+	}
+
+	enum e_VBO_enum {
+		eVBO_vertices = 0
+		eVBO_indices
+		eVBO_count
 	}
 
 	class Geometry_Box {
@@ -307,13 +322,6 @@ package "geometry" {
 		- float _sideSize
 		+ void setSideSize(float)
 		+ float getSideSize() const
-
-		.. Buffers ..
-		- GLuint  _pBoxVertexArrayObject_IDs[<color:#FF0000><b>eVAO_Count</b></color>]
-		- GLuint  _pBoxVertexBufferObject_IDs[<color:#FF0000><b>eVBO_Count</b></color>]
-
-		- t_Vertices  _boxVertices
-		- t_Indices   _boxIndices
 
 		.. ctor / dtor ..
 		+ Geometry_Box( t_Shader_Perlin3D& shader )
@@ -326,26 +334,8 @@ package "geometry" {
 		+ void unbind() const
 	}
 
-	enum e_VAO_Box_enum {
-		eVAO_Box = 0
-		eVAO_Count
-	}
-
-	enum e_VBO_Box_enum {
-		eVBO_Box_vertices = 0
-		eVBO_Box_indices
-		eVBO_Count
-	}
-
 
 	class Geometry_HUD_Frustum {
-		.. Buffers ..
-		- GLuint _pFrustumVertexArrayObject_IDs[<color:#FF0000><b>eVAO_Count</b></color>]
-		- GLuint _pFrustumVertexBufferObject_IDs[<color:#FF0000><b>eVBO_Count</b></color>]
-
-		- t_Vertices _frustumVertices
-		- t_Indices _frustumIndices
-
 		.. ctor / dtor ..
 		+ Geometry_HUD_Frustum( t_Shader_Perlin3D& shader )
 		+ ~Geometry_HUD_Frustum()
@@ -356,30 +346,11 @@ package "geometry" {
 		+ void regenerate()
 	}
 
-	enum e_VAO_Frustum_enum {
-		eVAO_Frustum = 0
-		eVAO_Count
-	}
-
-	enum e_VBO_Frustum_enum {
-		eVBO_Frustum_vertices = 0
-		eVBO_Frustum_indices
-		eVBO_Count
-	}
-
-
 	class Geometry_HUD_Grid {
 		.. sideSize ..
 		- float _sideSize
 		+ void setSideSize(float sideSize)
 		+ float getSideSize() const
-
-		.. Buffers ..
-		- GLuint _pGridVertexArrayObject_IDs[<color:#FF0000><b>eVAO_Count</b></color>]
-		- GLuint _pGridVertexBufferObject_IDs[<color:#FF0000><b>eVBO_Count</b></color>]
-
-		- t_Vertices _gridVertices
-		- t_Indices _gridIndices
 
 		.. ctor / dtor ..
 		+ Geometry_HUD_Grid( t_Shader_Perlin3D& shader )
@@ -391,35 +362,16 @@ package "geometry" {
 
 	}
 
-	enum e_VAO_Grid_enum {
-		eVAO_Grid = 0
-		eVAO_Count
-	}
-
-	enum e_VBO_Grid_enum {
-		eVBO_Grid_vertices = 0
-		eVBO_Grid_indices
-		eVBO_Count
-	}
-
 }
 
 
 t_Shader_Perlin3D o-- Abstract_Geometry
 
+Abstract_Geometry -- e_VBO_enum
+
 Abstract_Geometry <|-- Geometry_Box
 Abstract_Geometry <|-- Geometry_HUD_Frustum
 Abstract_Geometry <|-- Geometry_HUD_Grid
-
-
-Geometry_Box -- e_VAO_Box_enum
-Geometry_Box -- e_VBO_Box_enum
-
-Geometry_HUD_Frustum -- e_VAO_Frustum_enum
-Geometry_HUD_Frustum -- e_VBO_Frustum_enum
-
-Geometry_HUD_Grid -- e_VAO_Grid_enum
-Geometry_HUD_Grid -- e_VBO_Grid_enum
 
 
 
