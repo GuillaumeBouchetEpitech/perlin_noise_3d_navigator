@@ -19,28 +19,8 @@ public :
     void            setSideSize(float sideSize);
     inline float    getSideSize() const { return (_sideSize); }
 
-private :
-    enum {
-        eVAO_Grid = 0,
-        eVAO_Count
-    };
-
-    enum {
-        eVBO_Grid_vertices = 0,
-        eVBO_Grid_indices,
-        eVBO_Count
-    };
-
-private :
-    GLuint  _pGridVertexArrayObject_IDs[eVAO_Count];
-    GLuint  _pGridVertexBufferObject_IDs[eVBO_Count];
-
-    t_Vertices  _gridVertices;
-    t_Indices   _gridIndices;
-
 public :
     Geometry_HUD_Grid( t_Shader_Perlin3D& shader );
-    ~Geometry_HUD_Grid();
 
 public :
     void    generate();

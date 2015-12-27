@@ -6,24 +6,13 @@ Geometry_HUD_Frustum::Geometry_HUD_Frustum( t_Shader_Perlin3D& shader )
 {
 }
 
-Geometry_HUD_Frustum::~Geometry_HUD_Frustum()
-{
-    if (_VBO_and_VAO_initialized)
-    {
-        glDeleteVertexArrays( eVAO_Count, _pFrustumVertexArrayObject_IDs );
-        glDeleteBuffers( eVBO_Count, _pFrustumVertexBufferObject_IDs );
-    }
-}
-
-
-
 void    Geometry_HUD_Frustum::generate( double aspect_ratio )
 {
 
     std::cerr << "Geometry_HUD_Frustum::generate : " << aspect_ratio << std::endl;
 
-    _frustumVertices.clear();
-    _frustumIndices.clear();
+    _vertices.clear();
+    _indices.clear();
 
     {
 
@@ -62,25 +51,25 @@ void    Geometry_HUD_Frustum::generate( double aspect_ratio )
 
             myGL::Vec3f tmp_color(1,1,1);
 
-            _frustumVertices.push_back( t_Vertex( myGL::Vec3f(nearval, left,  top), tmp_color ) );
-            _frustumVertices.push_back( t_Vertex( myGL::Vec3f(nearval, right, top), tmp_color ) );
-            _frustumVertices.push_back( t_Vertex( myGL::Vec3f(nearval, left,  bottom), tmp_color ) );
-            _frustumVertices.push_back( t_Vertex( myGL::Vec3f(nearval, right, bottom), tmp_color ) );
+            _vertices.push_back( t_Vertex( myGL::Vec3f(nearval, left,  top), tmp_color ) );
+            _vertices.push_back( t_Vertex( myGL::Vec3f(nearval, right, top), tmp_color ) );
+            _vertices.push_back( t_Vertex( myGL::Vec3f(nearval, left,  bottom), tmp_color ) );
+            _vertices.push_back( t_Vertex( myGL::Vec3f(nearval, right, bottom), tmp_color ) );
 
             //            float	half_y = farval * sinf(fovy * 3.14f / 180.0f);
             //            float	half_z = half_y / aspect_ratio;
             float	half_z = farval * sinf(fovy * 3.14f / 180.0f);
             float	half_y = half_z * aspect_ratio;
 
-            _frustumVertices.push_back( t_Vertex( myGL::Vec3f( farval, -half_y, +half_z ), tmp_color ) );
-            _frustumVertices.push_back( t_Vertex( myGL::Vec3f( farval, +half_y, +half_z ), tmp_color ) );
-            _frustumVertices.push_back( t_Vertex( myGL::Vec3f( farval, -half_y, -half_z ), tmp_color ) );
-            _frustumVertices.push_back( t_Vertex( myGL::Vec3f( farval, +half_y, -half_z ), tmp_color ) );
+            _vertices.push_back( t_Vertex( myGL::Vec3f( farval, -half_y, +half_z ), tmp_color ) );
+            _vertices.push_back( t_Vertex( myGL::Vec3f( farval, +half_y, +half_z ), tmp_color ) );
+            _vertices.push_back( t_Vertex( myGL::Vec3f( farval, -half_y, -half_z ), tmp_color ) );
+            _vertices.push_back( t_Vertex( myGL::Vec3f( farval, +half_y, -half_z ), tmp_color ) );
         }
 
 #define D_PUSH_LINE(l_index1, l_index2)     \
-    _frustumIndices.push_back( l_index1 );  \
-    _frustumIndices.push_back( l_index2 );
+    _indices.push_back( l_index1 );  \
+    _indices.push_back( l_index2 );
 
         D_PUSH_LINE(0, 1);
         D_PUSH_LINE(1, 3);
@@ -110,58 +99,7 @@ void    Geometry_HUD_Frustum::generate( double aspect_ratio )
 
     ///
 
-    if (!_VBO_and_VAO_initialized)
-    {
-        _VBO_and_VAO_initialized = true;
-
-        glGenVertexArrays( eVAO_Count, _pFrustumVertexArrayObject_IDs );
-        glGenBuffers( eVBO_Count, _pFrustumVertexBufferObject_IDs );
-
-        { // FRUSTUM VAO
-
-            glBindVertexArray( _pFrustumVertexArrayObject_IDs[eVAO_Frustum] );
-            {
-
-                glBindBuffer( GL_ARRAY_BUFFER, _pFrustumVertexBufferObject_IDs[eVBO_Frustum_vertices] );
-                {
-                    glEnableVertexAttribArray( _shader._location_a_vertex );
-                    glVertexAttribPointer( _shader._location_a_vertex, 3, GL_FLOAT, GL_FALSE, sizeof(t_Vertex), (const GLvoid*)0 );
-
-                    glEnableVertexAttribArray( _shader._location_a_color );
-                    glVertexAttribPointer( _shader._location_a_color, 3, GL_FLOAT, GL_FALSE, sizeof(t_Vertex), (const GLvoid*)(sizeof(float) * 3) );
-
-                    glEnableVertexAttribArray( _shader._location_a_normal );
-                    glVertexAttribPointer( _shader._location_a_normal, 3, GL_FLOAT, GL_FALSE, sizeof(t_Vertex), (const GLvoid*)(sizeof(float) * 6) );
-                }
-
-                glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _pFrustumVertexBufferObject_IDs[eVBO_Frustum_indices] );
-
-            }
-            glBindVertexArray( 0 );
-
-        } // /FRUSTUM VAO
-
-    }
-
-    ///
-
-    { // FRUSTUM VBOs
-
-        glBindVertexArray( 0 );
-
-        glBindBuffer( GL_ARRAY_BUFFER, _pFrustumVertexBufferObject_IDs[eVBO_Frustum_vertices] );
-        {
-            glBufferData( GL_ARRAY_BUFFER, sizeof(t_Vertex) * _frustumVertices.size(), &(_frustumVertices[0]._coord.x), GL_STATIC_DRAW );
-        }
-        glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _pFrustumVertexBufferObject_IDs[eVBO_Frustum_indices] );
-        {
-            glBufferData( GL_ELEMENT_ARRAY_BUFFER, _frustumIndices.size() * sizeof(GLuint), (void*)&(_frustumIndices[0]), GL_STATIC_DRAW );
-        }
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-    } // /FRUSTUM VBOs
+    Abstract_Geometry::generate();
 
     ///
 
@@ -227,12 +165,12 @@ void    Geometry_HUD_Frustum::render( const myGL::GL_Matrix& modelviewMatrix,
 
     ///
 
-    glBindVertexArray( _pFrustumVertexArrayObject_IDs[eVAO_Frustum] );
+    glBindVertexArray( _VAO_ID );
 
     glCheckError();
 
     {
-        glDrawElements( GL_LINES, _frustumIndices.size(), GL_UNSIGNED_INT, (void*)0 );
+        glDrawElements( GL_LINES, _indices.size(), GL_UNSIGNED_INT, (void*)0 );
 
         glCheckError();
     }

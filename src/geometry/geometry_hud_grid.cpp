@@ -15,20 +15,11 @@ Geometry_HUD_Grid::Geometry_HUD_Grid( t_Shader_Perlin3D& shader )
 {
 }
 
-Geometry_HUD_Grid::~Geometry_HUD_Grid()
-{
-    if (_VBO_and_VAO_initialized)
-    {
-        glDeleteVertexArrays( eVAO_Count, _pGridVertexArrayObject_IDs );
-        glDeleteBuffers( eVBO_Count, _pGridVertexBufferObject_IDs );
-    }
-}
-
 void    Geometry_HUD_Grid::generate()
 {
 
-    _gridVertices.clear();
-    _gridIndices.clear();
+    _vertices.clear();
+    _indices.clear();
 
 
     {
@@ -37,7 +28,7 @@ void    Geometry_HUD_Grid::generate()
         //(void)tmp_color;
 
 #define SIDE                                ( _sideSize * 10.0f )
-#define PUSH_GRID_VERTEX(l_X, l_Y, l_Z)     _gridVertices.push_back( t_Vertex( myGL::Vec3f((l_X), (l_Y), (l_Z)), tmp_color ) )
+#define PUSH_GRID_VERTEX(l_X, l_Y, l_Z)     _vertices.push_back( t_Vertex( myGL::Vec3f((l_X), (l_Y), (l_Z)), tmp_color ) )
 
         for (int i = -4; i <= 4; ++i)
         {
@@ -70,66 +61,14 @@ void    Geometry_HUD_Grid::generate()
 #undef  PUSH_GRID_VERTEX
 #undef  SIDE
 
-        for (unsigned int i = 0; i < _gridVertices.size(); ++i)
-            _gridIndices.push_back( i );
+        for (unsigned int i = 0; i < _vertices.size(); ++i)
+            _indices.push_back( i );
 
     }
 
     ///
 
-    if (!_VBO_and_VAO_initialized)
-    {
-        _VBO_and_VAO_initialized = true;
-
-        glGenVertexArrays( eVAO_Count, _pGridVertexArrayObject_IDs );
-        glGenBuffers( eVBO_Count, _pGridVertexBufferObject_IDs );
-
-        { // GRID VAO
-
-            glBindVertexArray( _pGridVertexArrayObject_IDs[eVAO_Grid] );
-            {
-
-                glBindBuffer( GL_ARRAY_BUFFER, _pGridVertexBufferObject_IDs[eVBO_Grid_vertices] );
-                {
-                    glEnableVertexAttribArray( _shader._location_a_vertex );
-                    glVertexAttribPointer( _shader._location_a_vertex, 3, GL_FLOAT, GL_FALSE, sizeof(t_Vertex), (const GLvoid*)0 );
-
-                    glEnableVertexAttribArray( _shader._location_a_color );
-                    glVertexAttribPointer( _shader._location_a_color, 3, GL_FLOAT, GL_FALSE, sizeof(t_Vertex), (const GLvoid*)(sizeof(float) * 3) );
-
-                    glEnableVertexAttribArray( _shader._location_a_normal );
-                    glVertexAttribPointer( _shader._location_a_normal, 3, GL_FLOAT, GL_FALSE, sizeof(t_Vertex), (const GLvoid*)(sizeof(float) * 6) );
-                }
-
-                glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _pGridVertexBufferObject_IDs[eVBO_Grid_indices] );
-
-            }
-            glBindVertexArray( 0 );
-
-        } // /GRID VAO
-    }
-
-    ///
-
-    { // GRID VBOs
-
-        glBindVertexArray( 0 );
-
-        glBindBuffer( GL_ARRAY_BUFFER, _pGridVertexBufferObject_IDs[eVBO_Grid_vertices] );
-        {
-            glBufferData( GL_ARRAY_BUFFER, sizeof(t_Vertex) * _gridVertices.size(), &(_gridVertices[0]._coord.x), GL_STATIC_DRAW );
-        }
-        glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _pGridVertexBufferObject_IDs[eVBO_Grid_indices] );
-        {
-            glBufferData( GL_ELEMENT_ARRAY_BUFFER, _gridIndices.size() * sizeof(GLuint), (void*)&(_gridIndices[0]), GL_STATIC_DRAW );
-        }
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-    } // /GRID VBOss
-
-    ///
+    Abstract_Geometry::generate();
 
     glCheckError();
 
@@ -183,9 +122,9 @@ void    Geometry_HUD_Grid::render( const myGL::GL_Matrix& modelviewMatrix, const
 
     ///
 
-    glBindVertexArray( _pGridVertexArrayObject_IDs[eVAO_Grid] );
+    glBindVertexArray( _VAO_ID );
     {
-        glDrawElements( GL_LINES, _gridIndices.size(), GL_UNSIGNED_INT, (void*)0 );
+        glDrawElements( GL_LINES, _indices.size(), GL_UNSIGNED_INT, (void*)0 );
     }
     glBindVertexArray( 0 );
 
