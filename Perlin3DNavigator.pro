@@ -14,7 +14,7 @@ QMAKE_CXXFLAGS += -std=c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Perlin3DNavigator
+TARGET = exec
 TEMPLATE = app
 
 OBJECTS_DIR = ./obj
@@ -46,7 +46,8 @@ SOURCES += \
 
 SOURCES += \
     src/generation/PerlinNoise.cpp \
-    src/generation/Randomizer.cpp
+    src/generation/Randomizer.cpp \
+    src/generation/MarchingCube.cpp
 
 ###
 
@@ -74,7 +75,8 @@ HEADERS  += \
 
 HEADERS  += \
     src/generation/PerlinNoise.hpp \
-    src/generation/Randomizer.hpp
+    src/generation/Randomizer.hpp \
+    src/generation/MarchingCube.hpp
 
 ###
 

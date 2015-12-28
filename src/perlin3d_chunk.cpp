@@ -51,7 +51,8 @@ void    Perlin3D_Chunk::render()
 
     glBindVertexArray( _pChunkVertexArrayObject_IDs[eVAO_Perlin3dHull] );
 
-    glDrawElements( GL_TRIANGLES, _Indices.size(), GL_UNSIGNED_INT, (void*)0 );
+    // glDrawElements( GL_TRIANGLES, _Indices.size(), GL_UNSIGNED_INT, (void*)0 );
+    glDrawArrays( GL_TRIANGLES, 0, _Vertices.size() );
 
     glBindVertexArray( 0 );
 }
@@ -68,9 +69,13 @@ void    Perlin3D_Chunk::render_lines()
 
     ///
 
+
+    glCheckError();
+
     glBindVertexArray( _pChunkVertexArrayObject_IDs[eVAO_Perlin3dLines] );
 
     glDrawElements( GL_LINES, _Indices_lines.size(), GL_UNSIGNED_INT, (void*)0 );
+    // glDrawArrays( GL_LINES, 0, _Indices_lines.size() );
 
     glBindVertexArray( 0 );
 }
@@ -92,8 +97,12 @@ void    Perlin3D_Chunk::computeBuffers()
     {
         _VBO_and_VAO_initialized = true;
 
+        glCheckError();
+
         glGenVertexArrays( eVAO_Count, _pChunkVertexArrayObject_IDs );
         glGenBuffers( eVBO_Count, _pChunkVertexBufferObject_IDs );
+
+        glCheckError();
 
         ///
 
@@ -115,11 +124,13 @@ void    Perlin3D_Chunk::computeBuffers()
                         glVertexAttribPointer( _pShader->_location_a_normal, 3, GL_FLOAT, GL_FALSE, sizeof(t_Vertex), (const GLvoid*)(sizeof(float) * 6) );
                     }
 
-                    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _pChunkVertexBufferObject_IDs[eVBO_Perlin3dHull_indices] );
+                    // glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _pChunkVertexBufferObject_IDs[eVBO_Perlin3dHull_indices] );
 
                 }
                 glBindVertexArray( 0 );
             } // /VAO HULL
+
+            glCheckError();
 
             { // VAO LINES
                 glBindVertexArray( _pChunkVertexArrayObject_IDs[eVAO_Perlin3dLines] );
@@ -150,6 +161,8 @@ void    Perlin3D_Chunk::computeBuffers()
     } // if (!_VBO_and_VAO_initialized)
 
     ///
+
+    glCheckError();
 
     ///
 

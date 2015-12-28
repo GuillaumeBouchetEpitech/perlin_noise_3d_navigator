@@ -27,7 +27,8 @@ class   ChunkGenerator;
 class   Perlin3D_Chunk
 {
 private :
-    friend class    ChunkGenerator;
+    // friend class    ChunkGenerator;
+    friend class    MarchingCube;
 
 private :
     static t_Shader_Perlin3D*   _pShader;

@@ -40,12 +40,14 @@ void	Perlin3DViewerWidget::initializeGL()
 
     _shader.init();
 
-    ///
+    glCheckError();
 
-    glShadeModel(GL_SMOOTH);
+    ///
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClearDepth(1.0f);
+
+    glCheckError();
 
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
@@ -69,7 +71,7 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
 
         const myGL::Vec3f&    camera_pos = _FreeFly.getPosition();
 
-#define D_CHUNK (float)(_ChunkGenerator.getChunkSize())
+#define D_CHUNK (float)(_ChunkGenerator._marchingCube.getChunkSize())
 
 #define D_CHECK_NEG(l_value)                            \
     ( ( (l_value) < 0 )                                 \
@@ -207,64 +209,6 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
                 _ChunkGenerator.generate( i_inc_best_not_visible, tmp_Chunk );
 
         }
-
-        /**
-
-        for (i_inc.z = i_min.z; i_inc.z <= i_max.z; ++i_inc.z)
-            for (i_inc.y = i_min.y; i_inc.y <= i_max.y; ++i_inc.y)
-                for (i_inc.x = i_min.x; i_inc.x <= i_max.x; ++i_inc.x)
-                {
-                    bool    got_a_chunck = false;
-
-                    D_CHUNK_FOREACH(itC)
-//                    for ( t_Chunks::iterator  itC = _Perlin3D_Chunks.begin();
-//                          itC != _Perlin3D_Chunks.end();
-//                          ++itC )
-                        if ((*itC)->isEnabled())
-                        {
-                            const myGL::Vec3i&  tmp_pos = (*itC)->getPosition();
-
-                            if (i_inc == tmp_pos)
-                            {
-                                got_a_chunck = true;
-                                break;
-                            }
-
-                        }
-
-                    if (!got_a_chunck)
-                    {
-
-                        t_Chunks::iterator  itC = _Perlin3D_Chunks.begin();
-                        for (; itC != _Perlin3D_Chunks.end(); ++itC)
-                        {
-                            const myGL::Vec3i&  tmp_pos = (*itC)->getPosition();
-
-                            if ( (*itC)->isDisabled() ||
-                                 tmp_pos.x < i_min.x || tmp_pos.x > i_max.x ||
-                                 tmp_pos.y < i_min.y || tmp_pos.y > i_max.y ||
-                                 tmp_pos.z < i_min.z || tmp_pos.z > i_max.z )
-                            {
-                                _ChunkGenerator.generate( i_inc, *itC );
-                                break;
-                            }
-
-                        }
-
-                        if ( itC == _Perlin3D_Chunks.end() )
-                        {
-                            Perlin3D_Chunk* tmp_Chunk = new Perlin3D_Chunk;
-                            _Perlin3D_Chunks.push_back( tmp_Chunk );
-                            _ChunkGenerator.generate( i_inc, tmp_Chunk );
-                        }
-
-                        break;
-                    }
-
-                }
-
-        //*/
-
     }
 
 }
@@ -275,8 +219,8 @@ void    Perlin3DViewerWidget::renderHUD()
 {
     const myGL::Vec3f&  pos = _FreeFly.getPosition();
 
-    //float   side = 7 * (float)_ChunkGenerator.getChunkSize();
-    float   side = 2 * Navigator_GlobalValue::pTest->_chunkRange * (float)Navigator_GlobalValue::pTest->_chunkSize;
+    float   side = 1.5 * Navigator_GlobalValue::pTest->_chunkRange * (float)Navigator_GlobalValue::pTest->_chunkSize;
+    float   side2 = 2.5 * Navigator_GlobalValue::pTest->_chunkRange * (float)Navigator_GlobalValue::pTest->_chunkSize;
 
     int width = this->width();
     int height = this->height();
@@ -284,9 +228,15 @@ void    Perlin3DViewerWidget::renderHUD()
     float   aspectRatio = (float)width / height;
 
     myGL::GL_Matrix     Matrix_Proj;
+    myGL::GL_Matrix     Matrix_Proj_last;
+
     Matrix_Proj.Make_Ortho( -side * aspectRatio,side * aspectRatio,
                             -side,side,
                             -600,600 );
+
+    Matrix_Proj_last.Make_Ortho( -side2 * aspectRatio,side2 * aspectRatio,
+                             -side2,side2,
+                             -600,600 );
 
     glUniformMatrix4fvARB( _shader._location_u_projectionMatrix, 1, GL_FALSE, Matrix_Proj.Ptr() );
 
@@ -299,7 +249,8 @@ void    Perlin3DViewerWidget::renderHUD()
     double  aspect_ratio = (double)tmp_width / tmp_height;
 
 
-    {
+    { // first (from the top)
+
         myGL::GL_Matrix     Matrix_View;
         Matrix_View.Make_LookAt( myGL::Vec3f(pos.x, pos.y + 1, pos.z), pos, myGL::Vec3f(0,0,1) );
 
@@ -312,7 +263,8 @@ void    Perlin3DViewerWidget::renderHUD()
         _Geometry_HUD_Frustum.render( Matrix_View, _FreeFly, aspect_ratio );
     }
 
-    {
+    { // second (from the top)
+
         myGL::GL_Matrix     Matrix_View;
         Matrix_View.Make_LookAt( myGL::Vec3f(pos.x, pos.y, pos.z + 1), pos, myGL::Vec3f(0,1,0) );
 
@@ -325,11 +277,29 @@ void    Perlin3DViewerWidget::renderHUD()
         _Geometry_HUD_Frustum.render( Matrix_View, _FreeFly, aspect_ratio );
     }
 
-    {
+    { // third (from the top)
+
         myGL::GL_Matrix     Matrix_View;
         Matrix_View.Make_LookAt( myGL::Vec3f(pos.x + 1, pos.y, pos.z), pos, myGL::Vec3f(0,0,1) );
 
         glViewport( width / 4 * 3, height / 4 * 1, width / 4, height / 4 );
+
+        renderBoxes( Matrix_View );
+
+        _Geometry_HUDGrid.render( Matrix_View, camera_pos );
+
+        _Geometry_HUD_Frustum.render( Matrix_View, _FreeFly, aspect_ratio );
+    }
+
+
+    glUniformMatrix4fvARB( _shader._location_u_projectionMatrix, 1, GL_FALSE, Matrix_Proj_last.Ptr() );
+
+    { // fourth (from the top)
+
+        myGL::GL_Matrix     Matrix_View;
+        Matrix_View.Make_LookAt( myGL::Vec3f(pos.x + 1, pos.y + 1, pos.z + 1), pos, myGL::Vec3f(0,0,1) );
+
+        glViewport( width / 4 * 3, height / 4 * 0, width / 4, height / 4 );
 
         renderBoxes( Matrix_View );
 
@@ -356,14 +326,14 @@ void    Perlin3DViewerWidget::update()
     {
         Navigator_GlobalValue::pTest->_update_needed = false;
 
-        this->_ChunkGenerator._PerlinNoise.Set( Navigator_GlobalValue::pTest->_octaves,
-                                                Navigator_GlobalValue::pTest->_frequency,
-                                                Navigator_GlobalValue::pTest->_amplitude,
-                                                Navigator_GlobalValue::pTest->_seed );
+        this->_ChunkGenerator._marchingCube._PerlinNoise.Set( Navigator_GlobalValue::pTest->_octaves,
+                                                              Navigator_GlobalValue::pTest->_frequency,
+                                                              Navigator_GlobalValue::pTest->_amplitude,
+                                                              Navigator_GlobalValue::pTest->_seed );
 
-        if (this->_ChunkGenerator.getChunkSize() != Navigator_GlobalValue::pTest->_chunkSize)
+        if (this->_ChunkGenerator._marchingCube.getChunkSize() != Navigator_GlobalValue::pTest->_chunkSize)
         {
-            this->_ChunkGenerator.setChunkSize( Navigator_GlobalValue::pTest->_chunkSize );
+            this->_ChunkGenerator._marchingCube.setChunkSize( Navigator_GlobalValue::pTest->_chunkSize );
             _Geometry_HUDGrid.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
             _Geometry_Box.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
         }
@@ -396,38 +366,12 @@ void    Perlin3DViewerWidget::paintGL()
     glUniformMatrix4fvARB( _shader._location_u_modelviewMatrix, 1, GL_FALSE, _viewMatrix.Ptr() );
     glUniformMatrix4fvARB( _shader._location_u_projectionMatrix, 1, GL_FALSE, _projectionMatrix.Ptr() );
 
-    float   pMat3x3[9];
-    for (int i = 0; i < 9; ++i) pMat3x3[i] = _viewMatrix( i % 3, i / 3);
-    glUniformMatrix3fvARB( _shader._location_u_normalMatrix, 1, GL_FALSE, pMat3x3 );
-
-    /**/
-    _shader._properties_light.direction = myGL::Vec3f(1,1,1);
-    myGL::normalize( _shader._properties_light.direction );
-    myGL::Vec3f     direction;
-    for (int i = 0; i < 3; i++)
-        (&(direction.x))[i] =
-            _viewMatrix.Ptr()[0 + i] * (&(_shader._properties_light.direction.x))[0] +
-            _viewMatrix.Ptr()[4 + i] * (&(_shader._properties_light.direction.x))[1] +
-            _viewMatrix.Ptr()[8 + i] * (&(_shader._properties_light.direction.x))[2];
-    glUniform3fv( _shader._locations_light.directionLocation, 1, &(direction.x) );
-    //*/
-
     { // HULL
 
         glUniform4f( _shader._location_u_mode, 1, 1, 1, 0 );
 
-
         bool    lightEnabled = Navigator_GlobalValue::pTest->_lightEnabled;
         glUniform1i( _shader._location_u_lightEnabled, lightEnabled ? 1 : 0 );
-
-
-        bool    perturbationEnabled = Navigator_GlobalValue::pTest->_perturbationEnabled;
-
-        if (perturbationEnabled)
-        {
-            glUniform1f( _shader._location_u_advance, _advance );
-            glUniform1i( _shader._location_u_perturbationEnabled, 1 );
-        }
 
 
         if (Navigator_GlobalValue::pTest->_polyEnabled)
@@ -445,7 +389,6 @@ void    Perlin3DViewerWidget::paintGL()
             glUniform1i(  _shader._location_u_lightEnabled, 0 );
 
 
-
         glDepthFunc(GL_LEQUAL);
 
         glUniform4f( _shader._location_u_mode, 0, 0, 0, 1 );
@@ -456,75 +399,11 @@ void    Perlin3DViewerWidget::paintGL()
             for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
                 if (element->isVisible( _Frustum ))
                     element->render_lines();
-
         }
-
-        if (perturbationEnabled)
-            glUniform1i( _shader._location_u_perturbationEnabled, 0 );
 
         glDepthFunc(GL_LESS);
 
-
-
-        glCheckError();
-
-
-
-        {
-
-            //            myGL::Vec2f Target(this->width() / 8 * 3, this->height() / 2);
-            //            myGL::Vec3f Position;
-
-            //            if (_FreeFly.get3DPoint( Target, Position ))
-            //            {
-
-            //                myGL::Vec3f to_move = Position;
-            //                to_move.x -= (float)Perlin3D_Chunk::_chunkSize / 2;
-            //                to_move.y -= (float)Perlin3D_Chunk::_chunkSize / 2;
-            //                to_move.z -= (float)Perlin3D_Chunk::_chunkSize / 2;
-
-            //                myGL::GL_Matrix Matrix_Model;
-            //                Matrix_Model.PreMultTranslate( to_move );
-
-            //                /**
-            //                myGL::GL_Matrix Matrix_Model2;
-            //                //float   ratio = 1.0f / (float)Perlin3D_Chunk::_chunkSize;
-            //                //float   ratio = 0.01f;
-            //                float   ratio = 2.01f;
-            //                Matrix_Model2.PreMultScale( myGL::Vec3f( ratio, ratio, ratio ) );
-            //                //*/
-
-            //                ///
-
-            //                myGL::GL_Matrix tmp_modelviewMatrix = _FreeFly.get_ViewMatrix() * Matrix_Model;
-            //                //myGL::GL_Matrix tmp_modelviewMatrix = Matrix_Model2 * _FreeFly.get_ViewMatrix() * Matrix_Model;
-
-            //                glUniformMatrix4fvARB( _location_u_modelviewMatrix, 1, GL_FALSE, tmp_modelviewMatrix.Ptr() );
-
-            //                ///
-
-            //                glUniform4f( _location_u_mode, 1, 0, 0, 1 );
-
-            //                glBindVertexArray( _boxVertexArrayObject_id );
-
-            //                glDrawElements( GL_LINES, _boxIndices.size(), GL_UNSIGNED_INT, (void*)0 );
-
-            //                glBindVertexArray( 0 );
-            //            }
-
-        }
-
     } // /HULL
-
-    /**
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //*/
-
-    ///
-
-
-    glCheckError();
 
     { // BOX
 
@@ -564,7 +443,7 @@ void    Perlin3DViewerWidget::renderBoxes( const myGL::GL_Matrix& modelviewMatri
             const myGL::Vec3i&  chunk_pos = element->getPosition();
             myGL::Vec3f chunk_fpos(chunk_pos.x, chunk_pos.y, chunk_pos.z);
 
-#define D_SIDE  ((float)_ChunkGenerator.getChunkSize())
+#define D_SIDE  ((float)_ChunkGenerator._marchingCube.getChunkSize())
 
             chunk_fpos *= D_SIDE;
 
@@ -577,16 +456,20 @@ void    Perlin3DViewerWidget::renderBoxes( const myGL::GL_Matrix& modelviewMatri
                 renderBox( modelviewMatrix, *element );
         }
 
-    ///
+    /// visible boxes
 
     glUniform4f( _shader._location_u_mode, 1, 1, 1, 1 );
+
+    glLineWidth(2.0);
 
     for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
         if ( element->isEnabled() &&
              element->isVisible( _Frustum ) )
             renderBox( modelviewMatrix, *element );
 
-    ///
+    glLineWidth(1.0);
+
+    /// invisible boxes
 
     glUniform4f( _shader._location_u_mode, 1, 1, 0, 1 );
 
@@ -595,7 +478,7 @@ void    Perlin3DViewerWidget::renderBoxes( const myGL::GL_Matrix& modelviewMatri
              !element->isVisible( _Frustum ) )
             renderBox( modelviewMatrix, *element );
 
-    ///
+    /// disabled boxes
 
     glUniform4f( _shader._location_u_mode, 1, 0, 0, 1 );
 
@@ -615,7 +498,7 @@ void    Perlin3DViewerWidget::renderBox( const myGL::GL_Matrix& modelviewMatrix,
     const myGL::Vec3i&  pos = Chunk.getPosition();
 
     myGL::Vec3f to_move(pos.x, pos.y, pos.z);
-    to_move *= (float)_ChunkGenerator.getChunkSize();
+    to_move *= (float)_ChunkGenerator._marchingCube.getChunkSize();
 
     myGL::GL_Matrix Matrix_Model;
     Matrix_Model.PreMultTranslate( to_move );
@@ -629,5 +512,4 @@ void    Perlin3DViewerWidget::renderBox( const myGL::GL_Matrix& modelviewMatrix,
     ///
 
     _Geometry_Box.render();
-
 }
