@@ -108,45 +108,6 @@ package "widgets" {
 
 
 
-
-
-package "shader_utils" {
-
-class LightProperties {
-	.. attributs ..
-	+ myGL::Vec3f direction
-	+ myGL::Vec4f ambientColor
-	+ myGL::Vec4f diffuseColor
-	+ myGL::Vec4f specularColor
-}
-
-class MaterialProperties {
-	.. attributs ..
-	+ myGL::Vec4f ambientColor
-	+ myGL::Vec4f diffuseColor
-	+ myGL::Vec4f specularColor
-	+ GLfloat specularExponent
-}
-
-class LightLocations {
-	.. attributs ..
-	+ GLint directionLocation
-	+ GLint ambientColorLocation
-	+ GLint diffuseColorLocation
-	+ GLint specularColorLocation
-}
-
-class MaterialLocations {
-	.. attributs ..
-	+ GLint ambientColorLocation
-	+ GLint diffuseColorLocation
-	+ GLint specularColorLocation
-	+ GLint specularExponentLocation
-}
-
-}
-
-
 class t_Shader_Perlin3D {
 	.. attributs ..
 	+ GLuint _programm_id
@@ -160,15 +121,6 @@ class t_Shader_Perlin3D {
 	+ GLuint _location_u_normalMatrix
 	+ GLuint _location_u_mode
 	+ GLuint _location_u_lightEnabled
-
-	+ GLuint _location_u_perturbationEnabled
-	+ GLuint _location_u_advance
-
-	+ LightLocations _locations_light
-	+ MaterialLocations _locations_material
-
-	+ LightProperties _properties_light
-	+ MaterialProperties _properties_material
 
 	.. methods ..
 	+ void init()
@@ -388,11 +340,6 @@ Perlin3DViewerWidget *-- Geometry_HUD_Grid
 Perlin3DViewerWidget *-- ChunkGenerator
 Perlin3DViewerWidget *-- Perlin3D_Chunk
 ChunkGenerator o-- Perlin3D_Chunk
-
-t_Shader_Perlin3D *-- LightProperties
-t_Shader_Perlin3D *-- MaterialProperties
-t_Shader_Perlin3D *-- LightLocations
-t_Shader_Perlin3D *-- MaterialLocations
 
 
 @enduml
