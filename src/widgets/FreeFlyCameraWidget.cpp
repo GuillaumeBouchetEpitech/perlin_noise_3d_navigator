@@ -167,8 +167,6 @@ void	FreeFlyCameraWidget::initializeGL()
 
     ///
 
-    glShadeModel(GL_SMOOTH);
-
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClearDepth(1.0f);
 
