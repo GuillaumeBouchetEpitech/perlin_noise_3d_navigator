@@ -43,7 +43,7 @@ ChunkPropertiesWidget::ChunkPropertiesWidget(QWidget *parent) :
         "chunkRange",
         //*/
         "light",
-        "perturbation",
+        // "perturbation",
         "poly",
         "line",
         NULL
@@ -92,12 +92,12 @@ ChunkPropertiesWidget::ChunkPropertiesWidget(QWidget *parent) :
 //    pLayout->addWidget( _pQPushButton_light, 5,1 );
     connect(_pQPushButton_light, SIGNAL(clicked(bool)), this, SLOT(valueChanged_light(bool)));
 
-    _pQPushButton_perturbation = new QPushButton();
-    _pQPushButton_perturbation->setCheckable(true);
-    _pQPushButton_perturbation->setChecked( Navigator_GlobalValue::pTest->_perturbationEnabled );
-    valueChanged_perturbation( _pQPushButton_perturbation->isChecked() );
-//    pLayout->addWidget( _pQPushButton_perturbation, 6,1 );
-    connect(_pQPushButton_perturbation, SIGNAL(clicked(bool)), this, SLOT(valueChanged_perturbation(bool)));
+//     _pQPushButton_perturbation = new QPushButton();
+//     _pQPushButton_perturbation->setCheckable(true);
+//     _pQPushButton_perturbation->setChecked( Navigator_GlobalValue::pTest->_perturbationEnabled );
+//     valueChanged_perturbation( _pQPushButton_perturbation->isChecked() );
+// //    pLayout->addWidget( _pQPushButton_perturbation, 6,1 );
+//     connect(_pQPushButton_perturbation, SIGNAL(clicked(bool)), this, SLOT(valueChanged_perturbation(bool)));
 
 
 
@@ -140,7 +140,7 @@ ChunkPropertiesWidget::ChunkPropertiesWidget(QWidget *parent) :
         _QSpinBox_chunkRange,
         //*/
         _pQPushButton_light,
-        _pQPushButton_perturbation,
+        // _pQPushButton_perturbation,
         _pQPushButton_poly,
         _pQPushButton_line,
 
@@ -196,12 +196,12 @@ void    ChunkPropertiesWidget::valueChanged_light(bool value)
     _pQPushButton_light->setText( value ? "On" : "Off" );
 }
 
-void    ChunkPropertiesWidget::valueChanged_perturbation(bool value)
-{
-    Navigator_GlobalValue::pTest->_perturbationEnabled = value;
+// void    ChunkPropertiesWidget::valueChanged_perturbation(bool value)
+// {
+//     Navigator_GlobalValue::pTest->_perturbationEnabled = value;
 
-    _pQPushButton_perturbation->setText( value ? "On" : "Off" );
-}
+//     _pQPushButton_perturbation->setText( value ? "On" : "Off" );
+// }
 
 
 void    ChunkPropertiesWidget::valueChanged_poly(bool value)

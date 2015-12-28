@@ -13,7 +13,7 @@ public :
     unsigned int    _chunkRange;
 
     bool            _lightEnabled;
-    bool            _perturbationEnabled;
+    // bool            _perturbationEnabled;
 
     bool            _update_needed;
 

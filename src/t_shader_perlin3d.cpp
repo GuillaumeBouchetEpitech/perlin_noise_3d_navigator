@@ -8,71 +8,25 @@
 void    t_Shader_Perlin3D::init()
 {
 
-    glCheckError();
+    // if ( this->isAvailable_shader100() )
+        this->prepareShaderProgram( "shaders/test_100.vert.c", "shaders/test_100.frag.c" );
 
-
-    //if ( this->isAvailable_shader100() )
-        this->prepareShaderProgram( "shaders/test_100.vert", "shaders/test_100.frag" );
-
-    /**
-    else if ( isAvailable_shader150() )
-        this->prepareShaderProgram( "shaders/test_150.vert", "shaders/test_150.frag" );
+    /**/
+    // else // if ( isAvailable_shader150() )
+        // this->prepareShaderProgram( "shaders/test_150.vert", "shaders/test_150.frag" );
     //*/
 
-
-    glCheckError();
 
     _location_a_vertex = glGetAttribLocation( _programm_id, "a_vertex" );
     _location_a_color = glGetAttribLocation( _programm_id, "a_color" );
     _location_a_normal = glGetAttribLocation( _programm_id, "a_normal" );
+
     _location_u_modelviewMatrix = glGetUniformLocationARB( _programm_id, "u_modelviewMatrix" );
     _location_u_projectionMatrix = glGetUniformLocationARB( _programm_id, "u_projectionMatrix" );
-    _location_u_normalMatrix = glGetUniformLocationARB( _programm_id, "u_normalMatrix" );
     _location_u_mode = glGetUniformLocationARB( _programm_id, "u_mode" );
-
     _location_u_lightEnabled = glGetUniformLocationARB( _programm_id, "u_lightEnabled" );
+
     glUniform1i(  _location_u_lightEnabled, 1 );
-
-    _location_u_advance = glGetUniformLocationARB( _programm_id, "u_advance" );
-    glUniform1f( _location_u_advance, 0.0f );
-
-    _location_u_perturbationEnabled = glGetUniformLocationARB( _programm_id, "u_perturbationEnabled" );
-    glUniform1i( _location_u_perturbationEnabled, 0 );
-
-
-    _locations_light.directionLocation = glGetUniformLocation( _programm_id, "u_light.direction");
-    _locations_light.ambientColorLocation = glGetUniformLocation( _programm_id, "u_light.ambientColor");
-    _locations_light.diffuseColorLocation = glGetUniformLocation( _programm_id, "u_light.diffuseColor");
-    _locations_light.specularColorLocation = glGetUniformLocation( _programm_id, "u_light.specularColor");
-
-    _locations_material.ambientColorLocation = glGetUniformLocation( _programm_id, "u_material.ambientColor");
-    _locations_material.diffuseColorLocation = glGetUniformLocation( _programm_id, "u_material.diffuseColor");
-    _locations_material.specularColorLocation = glGetUniformLocation( _programm_id, "u_material.specularColor");
-    _locations_material.specularExponentLocation = glGetUniformLocation( _programm_id, "u_material.specularExponent");
-
-
-    _properties_light.direction = myGL::Vec3f(1,1,1);
-    _properties_light.ambientColor = myGL::Vec4f(0.3f,0.3f,0.3f, 1.0f);
-    _properties_light.diffuseColor = myGL::Vec4f(1.0f,1.0f,1.0f, 1.0f);
-    _properties_light.specularColor = myGL::Vec4f(1.0f,1.0f,1.0f, 1.0f);
-
-    _properties_material.ambientColor = myGL::Vec4f(1.0f,1.0f,1.0f, 1.0f);
-    _properties_material.diffuseColor = myGL::Vec4f(1.0f,1.0f,1.0f, 1.0f);
-    _properties_material.specularColor = myGL::Vec4f(1.0f,1.0f,1.0f, 1.0f);
-    _properties_material.specularExponent = 20.0f;
-    //_locations_material.specularExponent = 1.0f;
-
-    myGL::normalize( _properties_light.direction );
-    glUniform3fv( _locations_light.directionLocation, 1,     &(_properties_light.direction.x) );
-
-    glUniform4fv( _locations_light.ambientColorLocation, 1,  &(_properties_light.ambientColor.x) );
-    glUniform4fv( _locations_light.diffuseColorLocation, 1,  &(_properties_light.diffuseColor.x) );
-    glUniform4fv( _locations_light.specularColorLocation, 1, &(_properties_light.specularColor.x) );
-
-    glUniform4fv( _locations_material.ambientColorLocation, 1,  &(_properties_material.ambientColor.x) );
-    glUniform4fv( _locations_material.diffuseColorLocation, 1,  &(_properties_material.diffuseColor.x) );
-    glUniform4fv( _locations_material.specularColorLocation, 1, &(_properties_material.specularColor.x) );
-    glUniform1f(  _locations_material.specularExponentLocation, _properties_material.specularExponent );
 
     glCheckError();
 }
@@ -100,20 +54,15 @@ bool    t_Shader_Perlin3D::isAvailable_shader150()
 void    t_Shader_Perlin3D::prepareShaderProgram( const std::string& vertexShaderPath,
                                                  const std::string& fragmentShaderPath )
 {
-    glCheckError();
-
     struct  Shader
     {
         const std::string&  filename;
         GLenum              type;
         GLchar*             source;
-    } shaders[2] =
-    {
-        //    { vertexShaderPath.c_str(), GL_VERTEX_SHADER, NULL },
-        //    { fragmentShaderPath.c_str(), GL_FRAGMENT_SHADER, NULL }
-    { vertexShaderPath, GL_VERTEX_SHADER, NULL },
-    { fragmentShaderPath, GL_FRAGMENT_SHADER, NULL }
-};
+    } shaders[2] = {
+        { vertexShaderPath, GL_VERTEX_SHADER, NULL },
+        { fragmentShaderPath, GL_FRAGMENT_SHADER, NULL }
+    };
 
 
     GLuint program = glCreateProgram();

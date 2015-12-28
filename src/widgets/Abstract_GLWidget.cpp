@@ -35,8 +35,6 @@ Abstract_GLWidget::Abstract_GLWidget(QWidget *parent)
     _pQTimer = new QTimer(this);
 
     connect( _pQTimer, SIGNAL(timeout()), this, SLOT(slot_timeout()) );
-
-    _pQTimer->setInterval( 1.0f / 30.0f * 1000 );
 }
 
 Abstract_GLWidget::~Abstract_GLWidget()

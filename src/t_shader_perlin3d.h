@@ -8,38 +8,6 @@
 #include "glheader.h"
 
 
-struct  LightProperties
-{
-    myGL::Vec3f direction;
-    myGL::Vec4f ambientColor;
-    myGL::Vec4f diffuseColor;
-    myGL::Vec4f specularColor;
-};
-
-struct  MaterialProperties
-{
-    myGL::Vec4f ambientColor;
-    myGL::Vec4f diffuseColor;
-    myGL::Vec4f specularColor;
-    GLfloat     specularExponent;
-};
-
-struct  LightLocations
-{
-    GLint directionLocation;
-    GLint ambientColorLocation;
-    GLint diffuseColorLocation;
-    GLint specularColorLocation;
-};
-
-struct  MaterialLocations
-{
-    GLint ambientColorLocation;
-    GLint diffuseColorLocation;
-    GLint specularColorLocation;
-    GLint specularExponentLocation;
-};
-
 struct          t_Shader_Perlin3D
 {
     GLuint      _programm_id;
@@ -50,18 +18,11 @@ struct          t_Shader_Perlin3D
 
     GLuint      _location_u_modelviewMatrix;
     GLuint      _location_u_projectionMatrix;
-    GLuint      _location_u_normalMatrix;
     GLuint      _location_u_mode;
     GLuint      _location_u_lightEnabled;
 
     GLuint      _location_u_perturbationEnabled;
     GLuint      _location_u_advance;
-
-    LightLocations      _locations_light;
-    MaterialLocations   _locations_material;
-
-    LightProperties     _properties_light;
-    MaterialProperties  _properties_material;
 
 public :
     void    init();
