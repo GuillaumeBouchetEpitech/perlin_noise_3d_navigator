@@ -13,7 +13,7 @@ protected:
 
 protected:
     bool    _isInitialized;
-    bool    _VBO_and_VAO_initialized;
+    bool    _bufferInitialized;
 
 protected:
     enum e_VBO_enum {
@@ -33,8 +33,11 @@ public:
     Abstract_Geometry( t_Shader_Perlin3D& );
     ~Abstract_Geometry();
 
+private:
+    void    computeBuffers();
+
 public:
-    void        generate();
+    void    generate();
 
 };
 
