@@ -8,6 +8,8 @@ QT       += core gui
 QT       += opengl
 
 
+CONFIG   += debug
+
 
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -29,6 +31,7 @@ SOURCES += \
     src/t_shader_perlin3d.cpp \
     src/navigator_globalvalue.cpp \
     src/chunkgenerator.cpp \
+    src/chunkgenerator_runner.cpp \
     src/geometry/abstract_geometry.cpp
 
 SOURCES += \
@@ -58,6 +61,7 @@ HEADERS  += \
     src/t_shader_perlin3d.h \
     src/navigator_globalvalue.h \
     src/chunkgenerator.h \
+    src/chunkgenerator_runner.h \
     src/geometry/abstract_geometry.h
 
 HEADERS  += \

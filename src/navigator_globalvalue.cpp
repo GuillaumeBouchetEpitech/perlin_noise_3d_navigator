@@ -19,7 +19,7 @@ Navigator_GlobalValue::Navigator_GlobalValue()
       _lightEnabled(true),
       // _perturbationEnabled(false),
 
-      _update_needed(false),
+      _update_needed(true),
 
       _polyEnabled(true),
       _lineEnabled(true)

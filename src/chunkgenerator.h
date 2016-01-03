@@ -13,35 +13,45 @@
 #include <QMutex>
 #include <QWaitCondition>
 
+#include <iostream>
+
 
 class   Perlin3D_Chunk;
+class   Runner;
 
-class   ChunkGenerator : public QThread
+
+
+class   ChunkGenerator
 {
 
 private : // Threading utility
-    bool    _inUse;
-    bool    _abort;
 
-    QMutex          _mutex;
-    QWaitCondition  _condition;
+    std::vector<Runner*>    _arrFree;
 
-public :
-    inline bool threadInUse() const { return (_inUse); }
-
-    MarchingCube    _marchingCube; 
-
-protected :
-    void    run();
+    PerlinNoise     _PerlinNoise;
 
 public :
-    explicit ChunkGenerator(QObject *parent = NULL);
+    inline bool threadInUse() const { return (_arrFree.empty()); }
+
+public :
+    ChunkGenerator();
     ~ChunkGenerator();
 
+    inline void            setNoise(int octaves, float freq, float amp, int seed) {
+        _PerlinNoise.Set( octaves, freq, amp, seed );
+    }
+
 public :
-    bool    generate( const myGL::Vec3i& pos,
-                      Perlin3D_Chunk* pPerlin3D_Chunk,
-                      bool use_thread = true );
+    bool    generate( const myGL::Vec3i& pos, Perlin3D_Chunk* pc);
+
+    void    makeAvailable(Runner*);
+
+private :
+    unsigned int    _chunkSize;
+public :
+    inline unsigned int    getChunkSize() const    { return (_chunkSize); }
+    inline void            setChunkSize(unsigned int c){ _chunkSize = c; }
+
 };
 
 

@@ -40,8 +40,6 @@ private :
 public :
     t_Shader_Perlin3D   _shader;
 
-    float   _advance;
-
 private :
     Geometry_HUD_Grid       _Geometry_HUDGrid;
     Geometry_HUD_Frustum    _Geometry_HUD_Frustum;

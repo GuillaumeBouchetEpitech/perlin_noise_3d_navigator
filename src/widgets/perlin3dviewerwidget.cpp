@@ -4,6 +4,8 @@
 #include "navigator_globalvalue.h"
 
 
+#include <QThreadPool>
+
 #include <limits>
 
 
@@ -66,24 +68,32 @@ void	Perlin3DViewerWidget::initializeGL()
 void    Perlin3DViewerWidget::updatePerlinChunks()
 {
 
-    if (!_ChunkGenerator.threadInUse())
+    while (!_ChunkGenerator.threadInUse())
     {
+
+        //
+        // first obtain the camera position
 
         const myGL::Vec3f&    camera_pos = _FreeFly.getPosition();
 
-#define D_CHUNK (float)(_ChunkGenerator._marchingCube.getChunkSize())
+    #define D_CHUNK (float)(_ChunkGenerator.getChunkSize())
+    #define D_CHECK_NEG(l_value)                            \
+        ( ( (l_value) < 0 )                                 \
+        ? ( (l_value) / D_CHUNK - 1 )    \
+        : ( (l_value) / D_CHUNK ) )
 
-#define D_CHECK_NEG(l_value)                            \
-    ( ( (l_value) < 0 )                                 \
-    ? ( (l_value) / D_CHUNK - 1 )    \
-    : ( (l_value) / D_CHUNK ) )
+        //
+        // then obtain the camera chunk position
 
         myGL::Vec3i i_pos( D_CHECK_NEG( camera_pos.x ),
                            D_CHECK_NEG( camera_pos.y ),
                            D_CHECK_NEG( camera_pos.z ) );
 
-#undef  D_CHUNK
-#undef  D_CHECK_NEG
+    #undef  D_CHUNK
+    #undef  D_CHECK_NEG
+
+        //
+        // get the range in chunk (min/max)
 
         int tmp_dec = Navigator_GlobalValue::pTest->_chunkRange;
 
@@ -92,7 +102,7 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
 
         myGL::Vec3i i_inc;
 
-        /**/
+        ///
 
         myGL::Vec3i i_inc_best_visible;
         float       length_best_visible = std::numeric_limits<float>::max();
@@ -105,32 +115,30 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
                 for (i_inc.x = i_min.x; i_inc.x <= i_max.x; ++i_inc.x)
                 {
 
+                    ///
                     /// check if this coord got a chunk
 
                     bool    no_need_to_go_further = false;
 
-
                     for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
-                        if ( element->isEnabled() )
-                            //                    D_CHUNK_FOREACH(itC)
-                            //                            if ((*itC)->isEnabled())
+                    {
+                        const myGL::Vec3i&  tmp_pos = element->getPosition();
+
+                        /// same position
+                        if (i_inc == tmp_pos)
                         {
-                            const myGL::Vec3i&  tmp_pos = element->getPosition();
-
-                            if (i_inc == tmp_pos)
-                            {
-                                no_need_to_go_further = true;
-                                break;
-                            }
+                            no_need_to_go_further = true;
+                            break;
                         }
+                    }
 
-                    /// if yes => continue
+                    ///
+                    /// if yes => loop again
 
                     if (no_need_to_go_further)
                         continue;
 
-                    /// else
-                    ///   check if visible
+                    /// else => check if visible
 
                     myGL::Vec3f     tmp_pos1;
                     tmp_pos1.x = (float)i_inc.x * (float)Navigator_GlobalValue::pTest->_chunkSize;
@@ -171,46 +179,44 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
                 }
 
 
-        if ( length_best_visible != std::numeric_limits<float>::max() ||
-             length_best_not_visible != std::numeric_limits<float>::max() )
+        if ( length_best_visible == std::numeric_limits<float>::max() &&
+             length_best_not_visible == std::numeric_limits<float>::max() )
+            break;
+
+
+        Perlin3D_Chunk* tmp_Chunk = NULL;
+
+
+        t_Chunks::iterator  itC = _Perlin3D_Chunks.begin();
+        for (; itC != _Perlin3D_Chunks.end(); ++itC)
         {
+            const myGL::Vec3i&  tmp_pos = (*itC)->getPosition();
 
-            Perlin3D_Chunk* tmp_Chunk = NULL;
-
-
-            t_Chunks::iterator  itC = _Perlin3D_Chunks.begin();
-            for (; itC != _Perlin3D_Chunks.end(); ++itC)
+            if ( //(*itC)->isDisabled() ||
+                 tmp_pos.x < i_min.x || tmp_pos.x > i_max.x ||
+                 tmp_pos.y < i_min.y || tmp_pos.y > i_max.y ||
+                 tmp_pos.z < i_min.z || tmp_pos.z > i_max.z )
             {
-                const myGL::Vec3i&  tmp_pos = (*itC)->getPosition();
-
-                if ( (*itC)->isDisabled() ||
-                     tmp_pos.x < i_min.x || tmp_pos.x > i_max.x ||
-                     tmp_pos.y < i_min.y || tmp_pos.y > i_max.y ||
-                     tmp_pos.z < i_min.z || tmp_pos.z > i_max.z )
-                {
-                    break;
-                }
-
+                break;
             }
-
-            if ( itC == _Perlin3D_Chunks.end() )
-            {
-                tmp_Chunk = new Perlin3D_Chunk;
-                _Perlin3D_Chunks.push_back( tmp_Chunk );
-            }
-            else
-                tmp_Chunk = *itC;
-
-
-
-            if ( length_best_visible != std::numeric_limits<float>::max() )
-                _ChunkGenerator.generate( i_inc_best_visible, tmp_Chunk );
-            else
-                _ChunkGenerator.generate( i_inc_best_not_visible, tmp_Chunk );
 
         }
-    }
 
+        if ( itC == _Perlin3D_Chunks.end() )
+        {
+            tmp_Chunk = new Perlin3D_Chunk();
+            _Perlin3D_Chunks.push_back( tmp_Chunk );
+        }
+        else
+            tmp_Chunk = *itC;
+
+
+        if ( length_best_visible != std::numeric_limits<float>::max() )
+            _ChunkGenerator.generate( i_inc_best_visible, tmp_Chunk );
+        else
+            _ChunkGenerator.generate( i_inc_best_not_visible, tmp_Chunk );
+
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,26 +332,20 @@ void    Perlin3DViewerWidget::update()
     {
         Navigator_GlobalValue::pTest->_update_needed = false;
 
-        this->_ChunkGenerator._marchingCube._PerlinNoise.Set( Navigator_GlobalValue::pTest->_octaves,
-                                                              Navigator_GlobalValue::pTest->_frequency,
-                                                              Navigator_GlobalValue::pTest->_amplitude,
-                                                              Navigator_GlobalValue::pTest->_seed );
+        QThreadPool::globalInstance()->waitForDone();
 
-        if (this->_ChunkGenerator._marchingCube.getChunkSize() != Navigator_GlobalValue::pTest->_chunkSize)
-        {
-            this->_ChunkGenerator._marchingCube.setChunkSize( Navigator_GlobalValue::pTest->_chunkSize );
-            _Geometry_HUDGrid.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
-            _Geometry_Box.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
-        }
+        this->_ChunkGenerator.setNoise( Navigator_GlobalValue::pTest->_octaves,
+                                        Navigator_GlobalValue::pTest->_frequency,
+                                        Navigator_GlobalValue::pTest->_amplitude,
+                                        Navigator_GlobalValue::pTest->_seed );
+
+        this->_ChunkGenerator.setChunkSize( Navigator_GlobalValue::pTest->_chunkSize );
+        _Geometry_HUDGrid.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
+        _Geometry_Box.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
 
         for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
-            element->disable();
-    }
-
-    {
-        _advance += 1.0f / 30;
-        if (_advance > 1.0f)
-            _advance = _advance - (int)_advance - 1.0f;
+            delete element;
+        _Perlin3D_Chunks.clear();
     }
 
     updatePerlinChunks();
@@ -443,7 +443,7 @@ void    Perlin3DViewerWidget::renderBoxes( const myGL::GL_Matrix& modelviewMatri
             const myGL::Vec3i&  chunk_pos = element->getPosition();
             myGL::Vec3f chunk_fpos(chunk_pos.x, chunk_pos.y, chunk_pos.z);
 
-#define D_SIDE  ((float)_ChunkGenerator._marchingCube.getChunkSize())
+#define D_SIDE  ((float)_ChunkGenerator.getChunkSize())
 
             chunk_fpos *= D_SIDE;
 
@@ -498,7 +498,7 @@ void    Perlin3DViewerWidget::renderBox( const myGL::GL_Matrix& modelviewMatrix,
     const myGL::Vec3i&  pos = Chunk.getPosition();
 
     myGL::Vec3f to_move(pos.x, pos.y, pos.z);
-    to_move *= (float)_ChunkGenerator._marchingCube.getChunkSize();
+    to_move *= (float)_ChunkGenerator.getChunkSize();
 
     myGL::GL_Matrix Matrix_Model;
     Matrix_Model.PreMultTranslate( to_move );

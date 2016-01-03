@@ -1,3 +1,4 @@
+
 #ifndef MARCHINGCUBE_HPP
 #define MARCHINGCUBE_HPP
 
@@ -19,11 +20,9 @@ public :
     unsigned int    getChunkSize() const    { return (_chunkSize); }
     void            setChunkSize(unsigned int chunkSize);
 
-public :
-    PerlinNoise                 _PerlinNoise;
-
 public : // TODO -> this is ugly
-    Perlin3D_Chunk*             _pPerlin3D_Chunk;
+    PerlinNoise*    _PerlinNoise;
+    Perlin3D_Chunk* _pPerlin3D_Chunk;
 
 public :
     MarchingCube();

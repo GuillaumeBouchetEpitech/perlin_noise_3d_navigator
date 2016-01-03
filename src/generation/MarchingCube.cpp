@@ -21,14 +21,14 @@ MarchingCube::MarchingCube()
 
       _pPerlin3D_Chunk(NULL)
 {
-    {
-        int     octaves = 1;
-        float   freq = 1.0f;
-        float   amp = 1.0f;
-        int     seed = 0;
+    // {
+    //     int     octaves = 1;
+    //     float   freq = 1.0f;
+    //     float   amp = 1.0f;
+    //     int     seed = 0;
 
-        _PerlinNoise.Set( octaves, freq, amp, seed );
-    }
+    //     _PerlinNoise.Set( octaves, freq, amp, seed );
+    // }
 }
 
 MarchingCube::~MarchingCube()
@@ -43,6 +43,7 @@ void    MarchingCube::prepare( const myGL::Vec3i& pos, Perlin3D_Chunk* pPerlin3D
     _pPerlin3D_Chunk->_pos = pos;
     _pPerlin3D_Chunk->_sideSize = (float)_chunkSize;
 
+    std::cerr << "disabled" << std::endl;
     _pPerlin3D_Chunk->_enabled = false;
 }
 
@@ -51,6 +52,8 @@ void    MarchingCube::execute()
     marchingCubes();
 
     _pPerlin3D_Chunk->_is_computed = false;
+
+    std::cerr << "enabled" << std::endl;
     _pPerlin3D_Chunk->_enabled = true;
 }
 
@@ -444,7 +447,7 @@ float	s_fTv = 0.0f;    //Targetvalue
 
 float MarchingCube::sample(const float fX, const float fY, const float fZ)
 {
-    return (_PerlinNoise.get(fX, fY, fZ));
+    return (_PerlinNoise->get(fX, fY, fZ));
 }
 
 
