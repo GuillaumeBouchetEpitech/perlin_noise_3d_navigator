@@ -118,7 +118,7 @@ class t_Shader_Perlin3D {
 
 	+ GLuint _location_u_modelviewMatrix
 	+ GLuint _location_u_projectionMatrix
-	+ GLuint _location_u_normalMatrix
+
 	+ GLuint _location_u_mode
 	+ GLuint _location_u_lightEnabled
 
@@ -134,16 +134,29 @@ class t_Shader_Perlin3D {
 
 class   ChunkGenerator {
 	.. threading utility ..
-	- bool _inUse
-	- bool _abort
+	- std::vector<Runner*> _arrFree;
 
-	- QMutex _mutex
-	- QWaitCondition _condition
+	.. chunk size ..
+	- unsigned int _chunkSize
+	+ unsigned int getChunkSize() const
+	+ bool setChunkSize(unsigned int)
 
-	+ bool threadInUse() const
+	.. attributs ..
+	+ PerlinNoise _PerlinNoise
 
-	# void run()
+	.. ctor / dtor ..
+	+ ChunkGenerator(QObject *parent = NULL)
+	+ ~ChunkGenerator()
 
+	.. methods ..
+	+ bool generate<b>(</b>\n\tconst myGL::Vec3i& pos,\n\tPerlin3D_Chunk* pPerlin3D_Chunk,\n<b>)</b>
+
+	+ void makeAvailable(Runner*)
+}
+
+
+
+class   MarchingCube {
 	.. chunk size ..
 	- unsigned int _chunkSize
 	- float _fStepSize
@@ -151,20 +164,17 @@ class   ChunkGenerator {
 	+ unsigned int getChunkSize() const
 	+ bool setChunkSize(unsigned int)
 
-	.. cache ..
-	- float* _cache_perlinNoise
-	- int* _cache_trianglesIndices
-
 	.. attributs ..
 	+ PerlinNoise _PerlinNoise
 	- Perlin3D_Chunk* _pPerlin3D_Chunk
 
 	.. ctor / dtor ..
-	+ ChunkGenerator(QObject *parent = NULL)
-	+ ~ChunkGenerator()
+	+ MarchinCube()
+	+ ~MarchinCube()
 
 	.. methods ..
-	+ bool generate<b>(</b>\n\tconst myGL::Vec3i& pos,\n\tPerlin3D_Chunk* pPerlin3D_Chunk,\n\tbool use_thread = true\n<b>)</b>
+	+ bool prepare<b>(</b>\n\tconst myGL::Vec3i& pos,\n\tPerlin3D_Chunk* pPerlin3D_Chunk\n<b>)</b>
+	+ bool execute()
 
 	.. methods : marching cubes ..
 	- float sample(const float fX, const float fY, const float fZ)
@@ -173,9 +183,26 @@ class   ChunkGenerator {
 	- void  marchCube<b>(</b>\n\tconst int iX, const int iY, const int iZ,\n\tconst float fScale, const float fTv\n<b>)</b>
 }
 
-QThread <|-- ChunkGenerator
+ChunkGenerator *-- MarchingCube
 
 
+class   Runner {
+    - ChunkGenerator& _ChunkGenerator
+    - MarchingCube _marchingCube
+
+    + Runner(ChunkGenerator& cg, PerlinNoise& p)
+
+    + void set( unsigned int chunk_size,
+                const myGL::Vec3i& pos,
+                Perlin3D_Chunk* pPerlin3D_Chunk )
+
+    + virtual void run()
+}
+
+Runner -up-|> QRunnable
+Runner *-- ChunkGenerator
+Runner *-- MarchingCube
+Runner --o ChunkGenerator
 
 
 
@@ -221,6 +248,7 @@ class Perlin3D_Chunk {
 	+ bool isDisabled() const
 }
 
+MarchingCube o-- Perlin3D_Chunk
 
 enum e_VAO_PerlinChunk_enum {
 	eVAO_Perlin3dHull = 0
@@ -317,9 +345,9 @@ package "geometry" {
 }
 
 
-t_Shader_Perlin3D o-- Abstract_Geometry
+t_Shader_Perlin3D --o Abstract_Geometry
 
-Abstract_Geometry -- e_VBO_enum
+Abstract_Geometry - e_VBO_enum
 
 Abstract_Geometry <|-- Geometry_Box
 Abstract_Geometry <|-- Geometry_HUD_Frustum
