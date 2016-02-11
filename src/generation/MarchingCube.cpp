@@ -491,7 +491,7 @@ void  MarchingCube::marchingCubes()
 //This gradient can be used as a very accurate vertx normal for lighting calculations
 void  MarchingCube::getNormal( myGL::Vec3f &rfNormal, const float fX, const float fY, const float fZ )
 {
-    float   step_dec = _fStepSize * 0.01f;
+    float   step_dec = _fStepSize * 0.1f;
 
     rfNormal.x = sample( fX - step_dec, fY, fZ ) - sample( fX + step_dec, fY, fZ );
     rfNormal.y = sample( fX, fY - step_dec, fZ ) - sample( fX, fY + step_dec, fZ );
