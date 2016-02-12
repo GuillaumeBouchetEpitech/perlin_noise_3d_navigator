@@ -83,10 +83,10 @@ void    Perlin3D_Chunk::render_lines()
 
 bool    Perlin3D_Chunk::isVisible( const myGL::GL_FrustumCulling& Frustum )
 {
-    return ( Frustum.cubeInFrustum( (float)_pos.x * _sideSize,
-                                    (float)_pos.y * _sideSize,
-                                    (float)_pos.z * _sideSize,
-                                    _sideSize ) );
+    return ( Frustum.cubeInFrustum( (float)_pos.x * _sideSize + _sideSize/2,
+                                    (float)_pos.y * _sideSize + _sideSize/2,
+                                    (float)_pos.z * _sideSize + _sideSize/2,
+                                    _sideSize / 2 ) );
 }
 
 
