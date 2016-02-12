@@ -14,7 +14,7 @@ Navigator_GlobalValue::Navigator_GlobalValue()
       _seed(0),
 
       _chunkSize(20),
-      _chunkRange(1),
+      _chunkRange(2),
 
       _lightEnabled(true),
       // _perturbationEnabled(false),
