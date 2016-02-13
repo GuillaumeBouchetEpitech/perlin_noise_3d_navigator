@@ -23,6 +23,7 @@ class   Runner;
 
 class   ChunkGenerator
 {
+    friend Runner;
 
 private : // Threading utility
 
@@ -44,6 +45,7 @@ public :
 public :
     bool    generate( const myGL::Vec3i& pos, Perlin3D_Chunk* pc);
 
+private:
     void    makeAvailable(Runner*);
 
 private :
