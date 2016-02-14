@@ -56,9 +56,9 @@ bool    ChunkGenerator::generate( const myGL::Vec3i& pos, Perlin3D_Chunk* pc )
     if (_arrFree.empty())
         return (false);
 
-    std::cout << "generate=" << pos.x << "/" << pos.y << "/" << pos.z << std::endl;
-    std::cout << "_arrFree=" << _arrFree.size() << " (-1)" << std::endl;
-    std::cout << "active=" << QThreadPool::globalInstance()->activeThreadCount() << std::endl;
+    // std::cout << "generate=" << pos.x << "/" << pos.y << "/" << pos.z << std::endl;
+    // std::cout << "_arrFree=" << _arrFree.size() << " (-1)" << std::endl;
+    // std::cout << "active=" << QThreadPool::globalInstance()->activeThreadCount() << std::endl;
 
 
     Runner* tmpRunner = _arrFree.back();
@@ -77,5 +77,5 @@ void    ChunkGenerator::makeAvailable(Runner* r)
 {
     _arrFree.push_back(r);
 
-    std::cout << "_arrFree=" << _arrFree.size() << " (+1)" << std::endl;
+    // std::cout << "_arrFree=" << _arrFree.size() << " (+1)" << std::endl;
 }

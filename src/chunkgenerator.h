@@ -46,6 +46,7 @@ public :
     bool    generate( const myGL::Vec3i& pos, Perlin3D_Chunk* pc);
 
 private:
+    // this is how the Runner tell the chunkgenerator he's released
     void    makeAvailable(Runner*);
 
 private :
