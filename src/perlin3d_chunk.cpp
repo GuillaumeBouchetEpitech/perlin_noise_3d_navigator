@@ -29,11 +29,7 @@ Perlin3D_Chunk::Perlin3D_Chunk()
 
 Perlin3D_Chunk::~Perlin3D_Chunk()
 {
-    if (_VBO_and_VAO_initialized)
-    {
-        glDeleteVertexArrays( eVAO_Count, _pChunkVertexArrayObject_IDs );
-        glDeleteBuffers( eVBO_Count, _pChunkVertexBufferObject_IDs );
-    }
+    this->releaseBuffers();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -63,6 +59,8 @@ void    Perlin3D_Chunk::render_lines()
 
     if ( _Indices_lines.empty() )
         return;
+
+    glCheckError();
 
     if (!_is_computed)
         computeBuffers();
@@ -201,6 +199,23 @@ void    Perlin3D_Chunk::computeBuffers()
     _is_computed = true;
 }
 
+void    Perlin3D_Chunk::releaseBuffers()
+{
+    if (_VBO_and_VAO_initialized)
+    {
+        _VBO_and_VAO_initialized = false;
+        _is_computed = false;
+
+        _Vertices.clear();
+        _Indices.clear();
+        _Indices_lines.clear();
+
+        glDeleteVertexArrays( eVAO_Count, _pChunkVertexArrayObject_IDs );
+        glDeleteBuffers( eVBO_Count, _pChunkVertexBufferObject_IDs );
+
+        glCheckError();
+    }
+}
 
 
 

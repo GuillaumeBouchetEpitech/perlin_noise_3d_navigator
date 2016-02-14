@@ -77,6 +77,10 @@ private :
     bool    _is_computed;
     void    computeBuffers();
 
+public:
+
+    void    releaseBuffers();
+
 public :
 
     void    render();
@@ -95,15 +99,6 @@ public :
 
     inline bool isEnabled() const   { return (_enabled); }
     inline bool isDisabled() const  { return (!_enabled); }
-
-
-    /**
-private :
-    GLfloat sample(const GLfloat fX, const GLfloat fY, const GLfloat fZ);
-    GLvoid  marchingCubes();
-    GLvoid  getNormal( myGL::Vec3f &rfNormal, const GLfloat fX, const GLfloat fY, const GLfloat fZ );
-    GLvoid  marchCube( const GLint iX, const GLint iY, const GLint iZ, const GLfloat fScale, const GLfloat fTv );
-    //*/
 
 };
 

@@ -192,7 +192,7 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
         {
             const myGL::Vec3i&  tmp_pos = (*itC)->getPosition();
 
-            if ( //(*itC)->isDisabled() ||
+            if ( // (*itC)->isDisabled() ||
                  tmp_pos.x < i_min.x || tmp_pos.x > i_max.x ||
                  tmp_pos.y < i_min.y || tmp_pos.y > i_max.y ||
                  tmp_pos.z < i_min.z || tmp_pos.z > i_max.z )
@@ -208,7 +208,10 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
             _Perlin3D_Chunks.push_back( tmp_Chunk );
         }
         else
+        {
             tmp_Chunk = *itC;
+            tmp_Chunk->releaseBuffers();
+        }
 
 
         if ( length_best_visible != std::numeric_limits<float>::max() )
@@ -344,7 +347,10 @@ void    Perlin3DViewerWidget::update()
         _Geometry_Box.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
 
         for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+        {
+            element->releaseBuffers();
             delete element;
+        }
         _Perlin3D_Chunks.clear();
     }
 
