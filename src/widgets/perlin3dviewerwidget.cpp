@@ -347,10 +347,7 @@ void    Perlin3DViewerWidget::update()
         _Geometry_Box.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
 
         for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
-        {
-            element->releaseBuffers();
             delete element;
-        }
         _Perlin3D_Chunks.clear();
     }
 
