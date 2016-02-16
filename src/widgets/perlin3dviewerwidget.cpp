@@ -120,7 +120,7 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
 
                     bool    no_need_to_go_further = false;
 
-                    for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+                    for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
                     {
                         const myGL::Vec3i&  tmp_pos = element->getPosition();
 
@@ -352,7 +352,7 @@ void    Perlin3DViewerWidget::update()
         _Geometry_HUDGrid.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
         _Geometry_Box.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
 
-        for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+        for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
             delete element;
         _Perlin3D_Chunks.clear();
     }
@@ -386,7 +386,7 @@ void    Perlin3DViewerWidget::paintGL()
         if (Navigator_GlobalValue::pTest->_polyEnabled)
         {
 
-            for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+            for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
                 if (element->isEnabled() &&
                     element->isVisible( _Frustum ))
                     element->render();
@@ -406,7 +406,7 @@ void    Perlin3DViewerWidget::paintGL()
         if (Navigator_GlobalValue::pTest->_lineEnabled)
         {
 
-            for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+            for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
                 if (element->isEnabled() &&
                     element->isVisible( _Frustum ))
                     element->render_lines();
@@ -448,7 +448,7 @@ void    Perlin3DViewerWidget::renderBoxes( const myGL::GL_Matrix& modelviewMatri
     glUniform4f( _shader._location_u_mode, 0, 1, 0, 1 );
     glUniformMatrix4fvARB( _shader._location_u_modelviewMatrix, 1, GL_FALSE, modelviewMatrix.Ptr() );
 
-    for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+    for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
         if (element->isEnabled())
         {
             const myGL::Vec3i&  chunk_pos = element->getPosition();
@@ -473,7 +473,7 @@ void    Perlin3DViewerWidget::renderBoxes( const myGL::GL_Matrix& modelviewMatri
 
     glLineWidth(2.0);
 
-    for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+    for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
         if ( element->isEnabled() &&
              element->isVisible( _Frustum ) )
             renderBox( modelviewMatrix, *element );
@@ -484,7 +484,7 @@ void    Perlin3DViewerWidget::renderBoxes( const myGL::GL_Matrix& modelviewMatri
 
     glUniform4f( _shader._location_u_mode, 1, 1, 0, 1 );
 
-    for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+    for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
         if ( element->isEnabled() &&
              !element->isVisible( _Frustum ) )
             renderBox( modelviewMatrix, *element );
@@ -493,7 +493,7 @@ void    Perlin3DViewerWidget::renderBoxes( const myGL::GL_Matrix& modelviewMatri
 
     glUniform4f( _shader._location_u_mode, 1, 0, 0, 1 );
 
-    for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
+    for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
         if ( element->isDisabled() )
             renderBox( modelviewMatrix, *element );
 
