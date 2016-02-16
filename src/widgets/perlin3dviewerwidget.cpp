@@ -188,7 +188,8 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
 
 
         t_Chunks::iterator  itC = _Perlin3D_Chunks.begin();
-        for (; itC != _Perlin3D_Chunks.end(); ++itC)
+        // for (; itC != _Perlin3D_Chunks.end(); ++itC)
+        for (; itC != _Perlin3D_Chunks.end(); )
         {
             const myGL::Vec3i&  tmp_pos = (*itC)->getPosition();
 
@@ -197,21 +198,26 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
                  tmp_pos.y < i_min.y || tmp_pos.y > i_max.y ||
                  tmp_pos.z < i_min.z || tmp_pos.z > i_max.z )
             {
-                break;
+                delete *itC;
+                itC = _Perlin3D_Chunks.erase(itC);
+                // break;
             }
-
+            else
+            {
+                ++itC;
+            }
         }
 
-        if ( itC == _Perlin3D_Chunks.end() )
+        // if ( itC == _Perlin3D_Chunks.end() )
         {
             tmp_Chunk = new Perlin3D_Chunk();
             _Perlin3D_Chunks.push_back( tmp_Chunk );
         }
-        else
-        {
-            tmp_Chunk = *itC;
-            tmp_Chunk->releaseBuffers();
-        }
+        // else
+        // {
+        //     tmp_Chunk = *itC;
+        //     tmp_Chunk->releaseBuffers();
+        // }
 
 
         if ( length_best_visible != std::numeric_limits<float>::max() )
