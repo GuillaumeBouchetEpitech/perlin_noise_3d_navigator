@@ -387,7 +387,8 @@ void    Perlin3DViewerWidget::paintGL()
         {
 
             for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
-                if (element->isVisible( _Frustum ))
+                if (element->isEnabled() &&
+                    element->isVisible( _Frustum ))
                     element->render();
 
         }
@@ -406,7 +407,8 @@ void    Perlin3DViewerWidget::paintGL()
         {
 
             for (Perlin3D_Chunk* & element : _Perlin3D_Chunks)
-                if (element->isVisible( _Frustum ))
+                if (element->isEnabled() &&
+                    element->isVisible( _Frustum ))
                     element->render_lines();
         }
 
