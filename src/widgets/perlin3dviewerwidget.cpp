@@ -68,7 +68,7 @@ void	Perlin3DViewerWidget::initializeGL()
 void    Perlin3DViewerWidget::updatePerlinChunks()
 {
 
-    while (!_ChunkGenerator.threadInUse())
+    // while (!_ChunkGenerator.threadInUse())
     {
 
         //
@@ -181,7 +181,8 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
 
         if ( length_best_visible == std::numeric_limits<float>::max() &&
              length_best_not_visible == std::numeric_limits<float>::max() )
-            break;
+            // break;
+            return;
 
 
         Perlin3D_Chunk* tmp_Chunk = NULL;
@@ -193,12 +194,12 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
         {
             const myGL::Vec3i&  tmp_pos = (*itC)->getPosition();
 
-            if ( // (*itC)->isDisabled() ||
+            if ( !(*itC)->isDisabled() && (
                  tmp_pos.x < i_min.x || tmp_pos.x > i_max.x ||
                  tmp_pos.y < i_min.y || tmp_pos.y > i_max.y ||
-                 tmp_pos.z < i_min.z || tmp_pos.z > i_max.z )
+                 tmp_pos.z < i_min.z || tmp_pos.z > i_max.z ) )
             {
-                delete *itC;
+                delete *itC, *itC = NULL;
                 itC = _Perlin3D_Chunks.erase(itC);
                 // break;
             }
@@ -220,11 +221,39 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
         // }
 
 
-        if ( length_best_visible != std::numeric_limits<float>::max() )
-            _ChunkGenerator.generate( i_inc_best_visible, tmp_Chunk );
-        else
-            _ChunkGenerator.generate( i_inc_best_not_visible, tmp_Chunk );
+        // if ( length_best_visible != std::numeric_limits<float>::max() )
+        //     _ChunkGenerator.generate( i_inc_best_visible, tmp_Chunk );
+        // else
+        //     _ChunkGenerator.generate( i_inc_best_not_visible, tmp_Chunk );
 
+
+        if ( length_best_visible != std::numeric_limits<float>::max() )
+        {
+            PerlinNoise _PerlinNoise;
+            {
+                int     octaves = 1;
+                float   freq = 1.0f;
+                float   amp = 1.0f;
+                int     seed = 0;
+
+                _PerlinNoise.Set( octaves, freq, amp, seed );
+            }
+
+            MarchingCube    _marchingCube;
+            _marchingCube._PerlinNoise = &_PerlinNoise;
+            _marchingCube.setChunkSize(20);
+            _marchingCube.prepare(i_inc_best_visible, tmp_Chunk);
+            _marchingCube.execute();
+        }
+        else
+        {
+            // // _marchingCube._PerlinNoise = &p;
+            // _marchingCube.setChunkSize(chunk_size);
+            // _marchingCube.prepare(i_inc_best_not_visible, pPerlin3D_Chunk);
+            // _marchingCube.execute();
+        }
+
+        
     }
 }
 
@@ -353,7 +382,7 @@ void    Perlin3DViewerWidget::update()
         _Geometry_Box.setSideSize( Navigator_GlobalValue::pTest->_chunkSize );
 
         for (Perlin3D_Chunk* element : _Perlin3D_Chunks)
-            delete element;
+            delete element, element = NULL;
         _Perlin3D_Chunks.clear();
     }
 
