@@ -45,8 +45,8 @@ ChunkGenerator::~ChunkGenerator()
 {
     QThreadPool::globalInstance()->waitForDone();
 
-    for (unsigned int i = 0; i < _arrayAvailable.size(); ++i)
-        delete _arrayAvailable[i];
+    for (Runner* element : _arrayAvailable)
+        delete element;
 }
 
 
