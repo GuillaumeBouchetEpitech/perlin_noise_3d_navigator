@@ -36,33 +36,33 @@ ChunkGenerator::ChunkGenerator()
 
     //
 
-    _arrFree.reserve(count_max);
+    _arrayAvailable.reserve(count_max);
     for (int i = 0; i < count_max; ++i)
-        _arrFree.push_back( new Runner(*this, _PerlinNoise) );
+        _arrayAvailable.push_back( new Runner(*this, _PerlinNoise) );
 }
 
 ChunkGenerator::~ChunkGenerator()
 {
     QThreadPool::globalInstance()->waitForDone();
 
-    for (unsigned int i = 0; i < _arrFree.size(); ++i)
-        delete _arrFree[i];
+    for (unsigned int i = 0; i < _arrayAvailable.size(); ++i)
+        delete _arrayAvailable[i];
 }
 
 
 
 bool    ChunkGenerator::generate( const myGL::Vec3i& pos, Perlin3D_Chunk* pc )
 {
-    if (_arrFree.empty())
+    if (_arrayAvailable.empty())
         return (false);
 
     // std::cout << "generate=" << pos.x << "/" << pos.y << "/" << pos.z << std::endl;
-    // std::cout << "_arrFree=" << _arrFree.size() << " (-1)" << std::endl;
+    // std::cout << "_arrayAvailable=" << _arrayAvailable.size() << " (-1)" << std::endl;
     // std::cout << "active=" << QThreadPool::globalInstance()->activeThreadCount() << std::endl;
 
 
-    Runner* tmpRunner = _arrFree.back();
-    _arrFree.pop_back();
+    Runner* tmpRunner = _arrayAvailable.back();
+    _arrayAvailable.pop_back();
     // _arrBusy.push_back(tmpRunner);
 
     tmpRunner->set(_chunkSize, pos, pc );
@@ -75,7 +75,7 @@ bool    ChunkGenerator::generate( const myGL::Vec3i& pos, Perlin3D_Chunk* pc )
 
 void    ChunkGenerator::makeAvailable(Runner* r)
 {
-    _arrFree.push_back(r);
+    _arrayAvailable.push_back(r);
 
-    // std::cout << "_arrFree=" << _arrFree.size() << " (+1)" << std::endl;
+    // std::cout << "_arrayAvailable=" << _arrayAvailable.size() << " (+1)" << std::endl;
 }

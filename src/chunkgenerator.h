@@ -27,12 +27,12 @@ class   ChunkGenerator
 
 private : // Threading utility
 
-    std::vector<Runner*>    _arrFree;
+    std::vector<Runner*>    _arrayAvailable;
 
     PerlinNoise     _PerlinNoise;
 
 public :
-    inline bool threadInUse() const { return (_arrFree.empty()); }
+    inline bool threadAvailable() const { return (_arrayAvailable.empty()); }
 
 public :
     ChunkGenerator();

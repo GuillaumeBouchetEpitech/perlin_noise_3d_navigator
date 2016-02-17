@@ -68,7 +68,7 @@ void	Perlin3DViewerWidget::initializeGL()
 void    Perlin3DViewerWidget::updatePerlinChunks()
 {
 
-    // while (!_ChunkGenerator.threadInUse())
+    while (!_ChunkGenerator.threadAvailable())
     {
 
         //
@@ -221,37 +221,37 @@ void    Perlin3DViewerWidget::updatePerlinChunks()
         // }
 
 
-        // if ( length_best_visible != std::numeric_limits<float>::max() )
-        //     _ChunkGenerator.generate( i_inc_best_visible, tmp_Chunk );
-        // else
-        //     _ChunkGenerator.generate( i_inc_best_not_visible, tmp_Chunk );
-
-
         if ( length_best_visible != std::numeric_limits<float>::max() )
-        {
-            PerlinNoise _PerlinNoise;
-            {
-                int     octaves = 1;
-                float   freq = 1.0f;
-                float   amp = 1.0f;
-                int     seed = 0;
-
-                _PerlinNoise.Set( octaves, freq, amp, seed );
-            }
-
-            MarchingCube    _marchingCube;
-            _marchingCube._PerlinNoise = &_PerlinNoise;
-            _marchingCube.setChunkSize(20);
-            _marchingCube.prepare(i_inc_best_visible, tmp_Chunk);
-            _marchingCube.execute();
-        }
+            _ChunkGenerator.generate( i_inc_best_visible, tmp_Chunk );
         else
-        {
-            // // _marchingCube._PerlinNoise = &p;
-            // _marchingCube.setChunkSize(chunk_size);
-            // _marchingCube.prepare(i_inc_best_not_visible, pPerlin3D_Chunk);
-            // _marchingCube.execute();
-        }
+            _ChunkGenerator.generate( i_inc_best_not_visible, tmp_Chunk );
+
+
+        // if ( length_best_visible != std::numeric_limits<float>::max() )
+        // {
+        //     PerlinNoise _PerlinNoise;
+        //     {
+        //         int     octaves = 1;
+        //         float   freq = 1.0f;
+        //         float   amp = 1.0f;
+        //         int     seed = 0;
+
+        //         _PerlinNoise.Set( octaves, freq, amp, seed );
+        //     }
+
+        //     MarchingCube    _marchingCube;
+        //     _marchingCube._PerlinNoise = &_PerlinNoise;
+        //     _marchingCube.setChunkSize(20);
+        //     _marchingCube.prepare(i_inc_best_visible, tmp_Chunk);
+        //     _marchingCube.execute();
+        // }
+        // else
+        // {
+        //     // // _marchingCube._PerlinNoise = &p;
+        //     // _marchingCube.setChunkSize(chunk_size);
+        //     // _marchingCube.prepare(i_inc_best_not_visible, pPerlin3D_Chunk);
+        //     // _marchingCube.execute();
+        // }
 
         
     }
