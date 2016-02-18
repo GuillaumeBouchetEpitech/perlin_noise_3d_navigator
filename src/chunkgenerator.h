@@ -6,14 +6,8 @@
 #include "generation/MarchingCube.hpp"
 
 
-#include "myGL/GL_Vec3.hpp"
-
-
-#include <QThread>
-#include <QMutex>
-#include <QWaitCondition>
-
 #include <iostream>
+#include <vector>
 
 
 class   Perlin3D_Chunk;
