@@ -12,12 +12,6 @@
 #include "geometry/t_vertex.h"
 
 
-//#include <vector>
-
-//#include <QThread>
-
-
-
 
 
 struct  t_Shader_Perlin3D;
