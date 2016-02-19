@@ -25,6 +25,9 @@ Perlin3D_Chunk::Perlin3D_Chunk()
       _VBO_and_VAO_initialized(false),
       _is_computed(false)
 {
+    _Vertices.reserve(2048);
+    _Indices.reserve(2048);
+    _Indices_lines.reserve(2048);
 }
 
 Perlin3D_Chunk::~Perlin3D_Chunk()
