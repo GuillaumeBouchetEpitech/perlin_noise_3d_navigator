@@ -35,7 +35,7 @@ private :
     myGL::Vec3i _pos;
     float       _sideSize;
 
-    bool        _enabled;
+    bool        _processing;
 
     bool    _VBO_and_VAO_initialized;
 
@@ -88,11 +88,8 @@ public :
 
     inline const myGL::Vec3i&   getPosition() const { return (_pos); }
 
-    //inline void enable()    { _enabled = true; }
-    inline void disable()   { _enabled = false; }
-
-    inline bool isEnabled() const   { return (_enabled); }
-    inline bool isDisabled() const  { return (!_enabled); }
+    inline bool isEnabled() const   { return (_processing); }
+    inline bool isDisabled() const  { return (!_processing); }
 
 };
 

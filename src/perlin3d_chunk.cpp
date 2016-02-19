@@ -21,7 +21,7 @@ void  Perlin3D_Chunk::initialize( t_Shader_Perlin3D* pShader )
 }
 
 Perlin3D_Chunk::Perlin3D_Chunk()
-    : _enabled(false),
+    : _processing(false),
       _VBO_and_VAO_initialized(false),
       _is_computed(false)
 {
