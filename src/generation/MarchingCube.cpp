@@ -44,7 +44,7 @@ void    MarchingCube::prepare( const myGL::Vec3i& pos, Perlin3D_Chunk* pPerlin3D
     _pPerlin3D_Chunk->_sideSize = (float)_chunkSize;
 
     // std::cerr << "disabled" << std::endl;
-    _pPerlin3D_Chunk->_enabled = false;
+    _pPerlin3D_Chunk->_processing = false;
 }
 
 void    MarchingCube::execute()
@@ -54,7 +54,7 @@ void    MarchingCube::execute()
     _pPerlin3D_Chunk->_is_computed = false;
 
     // std::cerr << "enabled" << std::endl;
-    _pPerlin3D_Chunk->_enabled = true;
+    _pPerlin3D_Chunk->_processing = true;
 }
 
 
