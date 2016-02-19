@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //        setCentralWidget(_pQMdiArea);
 
-        _pPerlin3DViewerWidget = new Perlin3DViewerWidget(this);
+        _pPerlin3DViewerWidget = new Perlin3DViewerWidget();
 
         setCentralWidget( _pPerlin3DViewerWidget );
 
